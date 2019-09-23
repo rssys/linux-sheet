@@ -2,16 +2,18 @@ import csv
 import sys
 import curses
 
-def createGrid(stdscr, data):
-    max_row_len = len(max(data,key=len))
+def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
+    scaled_h = (h//len(data))
+    scaled_w = (w//max_row_len)
     for row_idx, row in enumerate(data):
-        y = row_idx * (h//len(data))
+        y = row_idx * scaled_h
         for col_idx in range(max_row_len):
-            x = col_idx * (w//max_row_len)
+            x = col_idx * scaled_w
             if col_idx < len(data[row_idx]):
                 stdscr.addstr(y,x, data[row_idx][col_idx])
+    stdscr.move(current_row_idx * scaled_h, current_col_idx * scaled_w)
     stdscr.refresh()
 
 def main(stdscr):
@@ -22,19 +24,32 @@ def main(stdscr):
         contents = list(reader)
     # stdscr = curses.initscr()
     print contents
-    createGrid(stdscr, contents)
+    max_row_len = len(max(contents,key=len))
+
+    # keep track of where user is
+    current_row_idx = 0
+    current_col_idx = 0
+
+    # initial drawing of grid
+    stdscr.move(0,0)
+    stdscr.refresh()
+    createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
+
 
     while 1:
+        # read in user input
         key = stdscr.getch()
+        # user navigation
+        if key == curses.KEY_UP and current_row_idx > 0:
+            current_row_idx -=1
+        elif key == curses.KEY_DOWN and current_row_idx < len(contents) - 1:
+            current_row_idx += 1
+        elif key == curses.KEY_LEFT and current_col_idx > 0:
+            current_col_idx -= 1
+        elif key == curses.KEY_RIGHT and current_col_idx < (max_row_len - 1):
+            current_col_idx += 1
 
-        stdscr.clear()
-
-        if key == curses.KEY_UP:
-            stdscr.addstr(0,0,"you pressed up!")
-        elif key == curses.KEY_DOWN:
-            stdscr.addstr(0,0,"you pressed down!")
-        stdscr.refresh()
-
+        createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
     # # terminates a curses program
     # curses.nocbreak()
     # stdscr.keypad(False)

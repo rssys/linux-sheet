@@ -22,14 +22,14 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     for row_idx, row in enumerate(data):
         y = (row_idx * cell_h) + 1
         bot_line_y = y+1
-        grid.hline(bot_line_y,0,'-',w)
+        grid.hline(bot_line_y,0,'-',w+w_offset)
         for col_idx in range(max_row_len):
             x = col_idx * cell_w
             right_line_x = x+10
-            grid.vline(0,right_line_x,'-',h)
+            grid.vline(0,right_line_x,'-',h+h_offset)
             if col_idx < len(data[row_idx]):
                 grid.addstr(y,x, data[row_idx][col_idx])
-    print("current", h_offset,"height = ",h)
+    print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
     if current_row_idx * cell_h > h:
         if current_col_idx * cell_w > w:

@@ -18,6 +18,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     stdscr.refresh()
 
 def main(stdscr):
+    # this is a test
     file_name = sys.argv[1]
     contents = []
     with open(file_name, 'r') as file:

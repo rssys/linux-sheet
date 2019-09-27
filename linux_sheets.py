@@ -2,6 +2,14 @@ import csv
 import sys
 import curses
 
+def pop_up_help(stdscr):
+    h, w = stdscr.getmaxyx()
+    manual = curses.newwin(5,50, h//2, w//2)
+    manual.box()
+    manual.addstr("this is the help menu", )
+    manual.refresh()
+
+
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
 
@@ -29,7 +37,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
             grid.vline(0,right_line_x,'-',h+h_offset)
             if col_idx < len(data[row_idx]):
                 grid.addstr(y,x, data[row_idx][col_idx])
-    print("current",current_row_idx * cell_h,"height = ",h+h_offset)
+    # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
     if current_row_idx * cell_h > h:
         if current_col_idx * cell_w > w:
@@ -69,16 +77,23 @@ def main(stdscr):
         # read in user input
         key = stdscr.getch()
         # user navigation
+        navigating = False
         if key == curses.KEY_UP and current_row_idx > 0:
             current_row_idx -=1
+            navigating = True
         elif key == curses.KEY_DOWN: #elif key == curses.KEY_DOWN and current_row_idx < len(contents) - 1:
             current_row_idx += 1
+            navigating = True
         elif key == curses.KEY_LEFT and current_col_idx > 0:
             current_col_idx -= 1
+            navigating = True
         elif key == curses.KEY_RIGHT and current_col_idx < (max_row_len - 1):
             current_col_idx += 1
-
-        createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
+            navigating = True
+        elif key == ord('f'):
+            pop_up_help(stdscr)
+        if navigating is True:
+            createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
     # # terminates a curses program
     # curses.nocbreak()
     # stdscr.keypad(False)

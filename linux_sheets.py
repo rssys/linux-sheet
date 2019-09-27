@@ -5,15 +5,16 @@ import curses
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     stdscr.clear()
     h, w = stdscr.getmaxyx()
-    scaled_h = (h//len(data))
-    scaled_w = (w//max_row_len)
+    # cell width and height let us do formatted printing and navigate through each cell
+    cell_h = (h//len(data))
+    cell_w = (w//max_row_len)
     for row_idx, row in enumerate(data):
-        y = row_idx * scaled_h
+        y = row_idx * cell_h
         for col_idx in range(max_row_len):
-            x = col_idx * scaled_w
+            x = col_idx * cell_w
             if col_idx < len(data[row_idx]):
                 stdscr.addstr(y,x, data[row_idx][col_idx])
-    stdscr.move(current_row_idx * scaled_h, current_col_idx * scaled_w)
+    stdscr.move(current_row_idx * cell_h, current_col_idx * cell_w)
     stdscr.refresh()
 
 def main(stdscr):

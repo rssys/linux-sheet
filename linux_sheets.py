@@ -28,7 +28,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     grid = curses.newpad(h + h_offset, w + w_offset)
     # loop through array
     for row_idx, row in enumerate(data):
-        y = (row_idx * cell_h) + 1
+        y = (row_idx * cell_h)
         for col_idx in range(max_row_len):
             x = col_idx * cell_w
             right_line_x = x+10
@@ -37,7 +37,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
                 grid.addstr(y,x+1, data[row_idx][col_idx])
     # draw the horizontal lines
     for h_line in range((h+h_offset)//cell_h):
-        y = (h_line * cell_h)
+        y = (h_line * cell_h) + 1
         grid.hline(y,0,'-',w+w_offset)
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
@@ -49,7 +49,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
             grid.refresh(h_offset,0,0,0,h,w)
             stdscr.move((current_row_idx * cell_h) - (h_offset) - cell_h, (current_col_idx * cell_w))
     else:
-        if current_col_idx * cell_w > w:
+        if current_col_idx * cell_w >= w:
             grid.refresh(0,w_offset,0,0,h,w)
             stdscr.move((current_row_idx * cell_h), (current_col_idx * cell_w) - w_offset)
         else:

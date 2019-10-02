@@ -19,6 +19,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
+    # gap at top of screen for the bar
+    top_bar_h = 1
 
     if current_row_idx * cell_h > h:
         h_offset = current_row_idx * cell_h - h
@@ -39,22 +41,27 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     for h_line in range((h+h_offset)//cell_h):
         y = (h_line * cell_h) + 1
         grid.hline(y,0,'-',w+w_offset)
+    # draw the vertical lines
+    for v_line in range((w+w_offset)//cell_w):
+        x = (v_line * cell_w)
+        grid.vline(0,x,'|',h+h_offset)
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
     if current_row_idx * cell_h >= h:
         if current_col_idx * cell_w >= w:
-            grid.refresh(h_offset,w_offset,0,0,h,w)
-            stdscr.move((current_row_idx * cell_h) - (h_offset) - cell_h, (current_col_idx * cell_w) - w_offset)
+            grid.move((current_row_idx * cell_h) - cell_h, (current_col_idx * cell_w) - cell_w)
+            grid.refresh(h_offset,w_offset,top_bar_h,0,h-top_bar_h,w)
         else:
-            grid.refresh(h_offset,0,0,0,h,w)
-            stdscr.move((current_row_idx * cell_h) - (h_offset) - cell_h, (current_col_idx * cell_w))
+            grid.move((current_row_idx * cell_h) - cell_h, (current_col_idx * cell_w))
+            grid.refresh(h_offset,0,top_bar_h,0,h-top_bar_h,w)
     else:
         if current_col_idx * cell_w >= w:
-            grid.refresh(0,w_offset,0,0,h,w)
-            stdscr.move((current_row_idx * cell_h), (current_col_idx * cell_w) - w_offset)
+            grid.move((current_row_idx * cell_h), (current_col_idx * cell_w) - cell_w)
+            grid.refresh(0,w_offset,top_bar_h,0,h-top_bar_h,w)
         else:
-            grid.refresh(0,0,0,0,h,w)
-            stdscr.move((current_row_idx * cell_h), (current_col_idx * cell_w))
+            grid.move((current_row_idx * cell_h), (current_col_idx * cell_w))
+            grid.refresh(0,0,top_bar_h,0,h-top_bar_h,w)
+
 def main(stdscr):
     file_name = sys.argv[1]
     contents = []
@@ -70,7 +77,6 @@ def main(stdscr):
     current_col_idx = 0
 
     # initial drawing of grid
-    stdscr.move(0,0)
     stdscr.refresh()
     createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
 
@@ -89,7 +95,7 @@ def main(stdscr):
         elif key == curses.KEY_LEFT and current_col_idx > 0:
             current_col_idx -= 1
             navigating = True
-        elif key == curses.KEY_RIGHT and current_col_idx < (max_row_len - 1):
+        elif key == curses.KEY_RIGHT: #and current_col_idx < (max_row_len - 1)
             current_col_idx += 1
             navigating = True
         elif key == ord('f'):

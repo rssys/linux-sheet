@@ -15,15 +15,19 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
 
     # cell width and height let us do formatted printing and navigate through each cell
     cell_h = 2
-    cell_w = 10
+    cell_w = 12
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
     # gap at top of screen for the bar
     top_bar_h = 1
+    # constant to make sure we jump to the start of the word and not the edge of a cell
+    dist_from_wall = 1
 
-    if current_row_idx * cell_h > h:
+    if current_row_idx * cell_h >= h:
         h_offset = current_row_idx * cell_h - h
+        if h_offset % 2 == 1:
+            h_offset += 1
     if current_col_idx * cell_w > w:
         w_offset = current_col_idx * cell_w - w
     # create the grid
@@ -33,34 +37,37 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         y = (row_idx * cell_h)
         for col_idx in range(max_row_len):
             x = col_idx * cell_w
-            right_line_x = x+10
-            grid.vline(0,right_line_x,'|',h+h_offset)
+            # right_line_x = x+10
+            # grid.vline(0,right_line_x,'|',h+h_offset)
             if col_idx < len(data[row_idx]):
-                grid.addstr(y,x+1, data[row_idx][col_idx])
+                if(x+1 < w):
+                    grid.addstr(y,x+1, data[row_idx][col_idx])
     # draw the horizontal lines
     for h_line in range((h+h_offset)//cell_h):
         y = (h_line * cell_h) + 1
         grid.hline(y,0,'-',w+w_offset)
     # draw the vertical lines
-    for v_line in range((w+w_offset)//cell_w):
+    for v_line in range(1,(w+w_offset)//cell_w):
         x = (v_line * cell_w)
         grid.vline(0,x,'|',h+h_offset)
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
     if current_row_idx * cell_h >= h:
-        if current_col_idx * cell_w >= w:
-            grid.move((current_row_idx * cell_h) - cell_h, (current_col_idx * cell_w) - cell_w)
+        if current_col_idx * cell_w+dist_from_wall >= w:
+            grid.move((current_row_idx * cell_h) - cell_h, dist_from_wall+(current_col_idx * cell_w) - cell_w)
             grid.refresh(h_offset,w_offset,top_bar_h,0,h-top_bar_h,w)
         else:
-            grid.move((current_row_idx * cell_h) - cell_h, (current_col_idx * cell_w))
+            # print(h_offset)
+            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
             grid.refresh(h_offset,0,top_bar_h,0,h-top_bar_h,w)
     else:
-        if current_col_idx * cell_w >= w:
-            grid.move((current_row_idx * cell_h), (current_col_idx * cell_w) - cell_w)
+        if current_col_idx * cell_w+dist_from_wall >= w:
+            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w) - cell_w)
             grid.refresh(0,w_offset,top_bar_h,0,h-top_bar_h,w)
         else:
-            grid.move((current_row_idx * cell_h), (current_col_idx * cell_w))
+            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
             grid.refresh(0,0,top_bar_h,0,h-top_bar_h,w)
+
 
 def main(stdscr):
     file_name = sys.argv[1]

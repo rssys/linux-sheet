@@ -2,6 +2,15 @@ import csv
 import sys
 import curses
 
+# global variables
+# cell width and height let us do formatted printing and navigate through each cell
+cell_h = 2
+cell_w = 12
+# gap at top of screen for the bar
+top_bar_h = 1
+# constant to make sure we jump to the start of the word and not the edge of a cell
+dist_from_wall = 1
+
 def pop_up_help(stdscr):
     h, w = stdscr.getmaxyx()
     manual = curses.newwin(5,50, h//2, w//2)
@@ -9,28 +18,21 @@ def pop_up_help(stdscr):
     manual.addstr("this is the help menu", )
     manual.refresh()
 
-# def write_to_cell(current_row_idx, current_col_idx):
+def write_to_cell(stdscr, current_row_idx, current_col_idx):
 
+    curses.echo()
+    stdscr.getstr(current_row_idx * cell_h + top_bar_h, current_col_idx * cell_w + dist_from_wall)
+    curses.noecho()
 
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
 
-    # cell width and height let us do formatted printing and navigate through each cell
-    cell_h = 2
-    cell_w = 12
+    # height of the grid window
+    grid_h = h - top_bar_h
 
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
-
-    # gap at top of screen for the bar
-    top_bar_h = 1
-
-    # height of the grid window
-    grid_h = h - top_bar_h
-
-    # constant to make sure we jump to the start of the word and not the edge of a cell
-    dist_from_wall = 1
 
     # set offsets
     if current_row_idx * cell_h > grid_h:
@@ -127,8 +129,8 @@ def main(stdscr):
             navigating = True
         elif key == ord('f'):
             pop_up_help(stdscr)
-        # elif key == '\n' or key == 13:
-
+        elif key == ord('i'):
+            write_to_cell(stdscr, current_row_idx, current_col_idx)
         if navigating is True:
             createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
     # # terminates a curses program

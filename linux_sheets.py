@@ -13,13 +13,14 @@ dist_from_wall = 1
 
 def pop_up_help(stdscr):
     h, w = stdscr.getmaxyx()
-    manual = curses.newwin(5,50, h//2, w//2)
+    manual = curses.newwin(5,50, h//2-2, w//2-25)
     manual.box()
-    manual.addstr("this is the help menu", )
+    manual.addstr(1,1,"this is the help menu")
+    manual.addstr(2,1,"Navigation: Arrow keys")
+    manual.addstr(3,1,"To input data: 'i', enter data")
     manual.refresh()
 
 def write_to_cell(stdscr, current_row_idx, current_col_idx):
-
     curses.echo()
     stdscr.getstr(current_row_idx * cell_h + top_bar_h, current_col_idx * cell_w + dist_from_wall)
     curses.noecho()

@@ -9,6 +9,8 @@ def pop_up_help(stdscr):
     manual.addstr("this is the help menu", )
     manual.refresh()
 
+# def write_to_cell(current_row_idx, current_col_idx):
+
 
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
@@ -42,15 +44,23 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     grid = curses.newpad(h + h_offset, w + w_offset)
 
     # loop through array
-    for row_idx, row in enumerate(data):
-        y = (row_idx * cell_h)
-        for col_idx in range(max_row_len):
-            x = col_idx * cell_w
-            # right_line_x = x+10
-            # grid.vline(0,right_line_x,'|',h+h_offset)
-            if col_idx < len(data[row_idx]):
-                if y < h + h_offset and x+1 < w+w_offset:
-                    grid.addstr(y,x+1, data[row_idx][col_idx])
+    # print data
+    for element in data:
+        element_parts = str(element).split('|')
+        y = int(element_parts[0]) * cell_h
+        x = int(element_parts[1]) * cell_w
+        element_str = element_parts[2]
+        if y < grid_h + h_offset and x+dist_from_wall < w+w_offset:
+            grid.addstr(y,x+dist_from_wall, element_str)
+
+    # # loop through array
+    # for row_idx, row in enumerate(data):
+    #     y = (row_idx * cell_h)
+    #     for col_idx in range(max_row_len):
+    #         x = col_idx * cell_w
+    #         if col_idx < len(data[row_idx]):
+    #             if y < h + h_offset and x+dist_from_wall < w+w_offset:
+    #                 grid.addstr(y,x+dist_from_wall, data[row_idx][col_idx])
 
     # draw the horizontal lines
     for h_line in range((h+h_offset)//cell_h):
@@ -66,7 +76,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     if current_row_idx * cell_h > grid_h:
         # print(h_offset)
         grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
-        if grid_h % 2 == 0:
+        if grid_h % cell_h == 0:
             grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
         else:
             grid.refresh(h_offset,0,top_bar_h,0,grid_h,w)
@@ -84,9 +94,9 @@ def main(stdscr):
     contents = []
     with open(file_name, 'r') as file:
         reader = csv.reader(file, delimiter=',')
-        contents = list(reader)
+        # get as 2d list, but sum() flattens it into 1d list
+        contents = sum(list(reader),[])
     # stdscr = curses.initscr()
-    print contents
     max_row_len = len(max(contents,key=len))
 
     # keep track of where user is
@@ -117,6 +127,8 @@ def main(stdscr):
             navigating = True
         elif key == ord('f'):
             pop_up_help(stdscr)
+        # elif key == '\n' or key == 13:
+
         if navigating is True:
             createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
     # # terminates a curses program

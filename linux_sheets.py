@@ -31,8 +31,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     dist_from_wall = 1
 
     # set offsets
-    if current_row_idx * cell_h >= h:
-        h_offset = current_row_idx * cell_h - h
+    if current_row_idx * cell_h > grid_h:
+        h_offset = current_row_idx * cell_h - grid_h
         h_offset += h_offset % cell_h
     if current_col_idx * cell_w > w:
         w_offset = current_col_idx * cell_w - w
@@ -63,20 +63,19 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
 
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
-    if current_row_idx * cell_h >= grid_h:
-        if current_col_idx * cell_w + dist_from_wall >= w:
-            grid.move((current_row_idx * cell_h) - cell_h, dist_from_wall+(current_col_idx * cell_w) - cell_w)
-            grid.refresh(h_offset,w_offset,top_bar_h,0,grid_h,w)
+    if current_row_idx * cell_h > grid_h:
+        # print(h_offset)
+        grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
+        if grid_h % 2 == 0:
+            grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
         else:
-            # print(h_offset)
-            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
             grid.refresh(h_offset,0,top_bar_h,0,grid_h,w)
     else:
-        if current_col_idx * cell_w + dist_from_wall >= w:
-            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w) - cell_w)
-            grid.refresh(0,w_offset,top_bar_h,0,grid_h,w)
+        # print(current_row_idx*cell_h)
+        grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
+        if current_row_idx*cell_h == grid_h:
+            grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
         else:
-            grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
             grid.refresh(0,0,top_bar_h,0,grid_h,w)
 
 

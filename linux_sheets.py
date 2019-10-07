@@ -7,7 +7,7 @@ import curses
 cell_h = 2
 cell_w = 12
 # gap at top of screen for the bar
-top_bar_h = 1
+top_margin = 1
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
 
@@ -22,14 +22,14 @@ def pop_up_help(stdscr):
 
 def write_to_cell(stdscr, current_row_idx, current_col_idx):
     curses.echo()
-    stdscr.getstr(current_row_idx * cell_h + top_bar_h, current_col_idx * cell_w + dist_from_wall)
+    stdscr.getstr(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall)
     curses.noecho()
 
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
 
     # height and width of the grid window
-    grid_h = h - top_bar_h
+    grid_h = h - top_margin
     grid_w = w
     # offsets for when user scrolls down
     h_offset = 0
@@ -90,24 +90,24 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         # print(h_offset)
         if grid_h % cell_h == 0:
             display_h = cell_h + h_offset
-            # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(cell_h+h_offset,0,top_margin,0,grid_h,w)
         else:
             display_h = h_offset
-            # grid.refresh(h_offset,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(h_offset,0,top_margin,0,grid_h,w)
     else:
         # print(current_row_idx*cell_h)
         if current_row_idx * cell_h == grid_h:
             display_h = cell_h
-            # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(cell_h,0,top_margin,0,grid_h,w)
         else:
             display_h = 0
-            # grid.refresh(0,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(0,0,top_margin,0,grid_h,w)
 
     # get display width
     if current_col_idx * cell_w + dist_from_wall > grid_w:
         # if grid_w % cell_w == 0:
         display_w = w_offset
-            # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(cell_h+h_offset,0,top_margin,0,grid_h,w)
             # print display_w
         # else:
             # display_w = w_offset
@@ -118,12 +118,12 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         # # print(current_row_idx*cell_h)
         if current_col_idx * cell_w + dist_from_wall == grid_w:
             display_w = cell_w
-            # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
+            # grid.refresh(cell_h,0,top_margin,0,grid_h,w)
         else:
             display_w = 0
             # print current_col_idx * cell_w + dist_from_wall
 
-    grid.refresh(display_h,display_w,top_bar_h,0,grid_h,grid_w)
+    grid.refresh(display_h,display_w,top_margin,0,grid_h,grid_w)
 
 def main(stdscr):
     file_name = sys.argv[1]

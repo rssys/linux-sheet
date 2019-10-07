@@ -28,9 +28,9 @@ def write_to_cell(stdscr, current_row_idx, current_col_idx):
 def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
 
-    # height of the grid window
+    # height and width of the grid window
     grid_h = h - top_bar_h
-
+    grid_w = w
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
@@ -38,10 +38,12 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     # set offsets
     if current_row_idx * cell_h > grid_h:
         h_offset = current_row_idx * cell_h - grid_h
-        h_offset += h_offset % cell_h
+        h_offset += (h_offset % cell_h)
     if current_col_idx * cell_w > w:
         w_offset = current_col_idx * cell_w - w
-        w_offset += w_offset % cell_w
+        # print w_offset
+        w_offset += (cell_w - w_offset % cell_w)
+        # print w_offset
 
     # create the grid
     grid = curses.newpad(h + h_offset, w + w_offset)
@@ -70,27 +72,55 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         y = (h_line * cell_h) + 1
         grid.hline(y,0,'-',w+w_offset)
     # draw the vertical lines
-    for v_line in range(1,(w+w_offset)//cell_w):
+    for v_line in range(0,(w+w_offset)//cell_w + 1):
         x = (v_line * cell_w)
-        grid.vline(0,x,'|',h+h_offset)
+        if x < grid_w+w_offset:
+            grid.vline(0,x,'|',h+h_offset)
 
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
+
+    grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
+    # print current_row_idx * cell_h
+    # variables for changing what portions of the screen to display
+    display_h = 0
+    display_w = 0
+    # get display height
     if current_row_idx * cell_h > grid_h:
         # print(h_offset)
-        grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
         if grid_h % cell_h == 0:
-            grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
+            display_h = cell_h + h_offset
+            # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
         else:
-            grid.refresh(h_offset,0,top_bar_h,0,grid_h,w)
+            display_h = h_offset
+            # grid.refresh(h_offset,0,top_bar_h,0,grid_h,w)
     else:
         # print(current_row_idx*cell_h)
-        grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
-        if current_row_idx*cell_h == grid_h:
-            grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
+        if current_row_idx * cell_h == grid_h:
+            display_h = cell_h
+            # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
         else:
-            grid.refresh(0,0,top_bar_h,0,grid_h,w)
+            display_h = 0
+            # grid.refresh(0,0,top_bar_h,0,grid_h,w)
 
+    # get display width
+    if current_col_idx * cell_w > grid_w:
+        # if grid_w % cell_w == 0:
+        #     display_w = cell_w + w_offset
+        #     # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
+        # else:
+        #     display_w = w_offset
+        display_w = w_offset
+        # print w_offset
+    else:
+        # # print(current_row_idx*cell_h)
+        # if current_col_idx * cell_w == grid_w:
+        #     display_w = w_offset
+        #     # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
+        # else:
+        display_w = 0
+
+    grid.refresh(display_h,display_w,top_bar_h,0,grid_h,grid_w)
 
 def main(stdscr):
     file_name = sys.argv[1]

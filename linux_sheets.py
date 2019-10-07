@@ -39,8 +39,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     if current_row_idx * cell_h > grid_h:
         h_offset = current_row_idx * cell_h - grid_h
         h_offset += (h_offset % cell_h)
-    if current_col_idx * cell_w > w:
-        w_offset = current_col_idx * cell_w - w
+    if current_col_idx * cell_w + dist_from_wall >= grid_w:
+        w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
         # print w_offset
         w_offset += (cell_w - w_offset % cell_w)
         # print w_offset
@@ -79,8 +79,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
 
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
-
     grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
+    # print current_col_idx * cell_w + dist_from_wall
     # print current_row_idx * cell_h
     # variables for changing what portions of the screen to display
     display_h = 0
@@ -104,21 +104,24 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
             # grid.refresh(0,0,top_bar_h,0,grid_h,w)
 
     # get display width
-    if current_col_idx * cell_w > grid_w:
+    if current_col_idx * cell_w + dist_from_wall > grid_w:
         # if grid_w % cell_w == 0:
-        #     display_w = cell_w + w_offset
-        #     # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
-        # else:
-        #     display_w = w_offset
         display_w = w_offset
+            # grid.refresh(cell_h+h_offset,0,top_bar_h,0,grid_h,w)
+            # print display_w
+        # else:
+            # display_w = w_offset
+            # print current_col_idx * cell_w + dist_from_wall
+        # display_w = w_offset
         # print w_offset
     else:
         # # print(current_row_idx*cell_h)
-        # if current_col_idx * cell_w == grid_w:
-        #     display_w = w_offset
-        #     # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
-        # else:
-        display_w = 0
+        if current_col_idx * cell_w + dist_from_wall == grid_w:
+            display_w = cell_w
+            # grid.refresh(cell_h,0,top_bar_h,0,grid_h,w)
+        else:
+            display_w = 0
+            # print current_col_idx * cell_w + dist_from_wall
 
     grid.refresh(display_h,display_w,top_bar_h,0,grid_h,grid_w)
 

@@ -8,18 +8,19 @@ cell_h = 2
 cell_w = 12
 # gap at top and left of screen for the bar
 top_margin = 3
-left_margin = 20
+left_margin = 3
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
 
 def pop_up_help(stdscr):
     h, w = stdscr.getmaxyx()
-    manual = curses.newwin(5,50, h//2-2, w//2-25)
+    manual = curses.newwin(h, w, 0, 0)
     manual.box()
     manual.addstr(1,1,"this is the help menu")
     manual.addstr(2,1,"Navigation: Arrow keys")
     manual.addstr(3,1,"To input data: 'i', enter data")
     manual.refresh()
+
 
 def write_to_cell(stdscr, current_row_idx, current_col_idx):
     curses.echo()
@@ -37,7 +38,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     w_offset = 0
 
     # set offsets
-    if current_row_idx * cell_h > grid_h:
+    if current_row_idx * cell_h >= grid_h:
         h_offset = current_row_idx * cell_h - grid_h
         h_offset += (cell_h - h_offset % cell_h)
     if current_col_idx * cell_w + dist_from_wall >= grid_w:
@@ -56,7 +57,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         y = int(element_parts[0]) * cell_h
         x = int(element_parts[1]) * cell_w
         element_str = element_parts[2]
-        if y <= grid_h + h_offset and x+dist_from_wall < w+w_offset:
+        if y < grid_h + h_offset and x+dist_from_wall < w+w_offset:
             grid.addstr(y,x+dist_from_wall, element_str)
 
     # # loop through array
@@ -162,7 +163,7 @@ def main(stdscr):
         elif key == curses.KEY_RIGHT: #and current_col_idx < (max_row_len - 1)
             current_col_idx += 1
             navigating = True
-        elif key == ord('f'):
+        elif key == ord('h'):
             pop_up_help(stdscr)
         elif key == ord('i'):
             write_to_cell(stdscr, current_row_idx, current_col_idx)

@@ -6,8 +6,9 @@ import curses
 # cell width and height let us do formatted printing and navigate through each cell
 cell_h = 2
 cell_w = 12
-# gap at top of screen for the bar
-top_margin = 1
+# gap at top and left of screen for the bar
+top_margin = 3
+left_margin = 20
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
 
@@ -30,7 +31,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
 
     # height and width of the grid window
     grid_h = h - top_margin
-    grid_w = w
+    grid_w = w - left_margin
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
@@ -38,7 +39,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     # set offsets
     if current_row_idx * cell_h > grid_h:
         h_offset = current_row_idx * cell_h - grid_h
-        h_offset += (h_offset % cell_h)
+        h_offset += (cell_h - h_offset % cell_h)
     if current_col_idx * cell_w + dist_from_wall >= grid_w:
         w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
         # print w_offset
@@ -46,7 +47,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         # print w_offset
 
     # create the grid
-    grid = curses.newpad(h + h_offset, w + w_offset)
+    grid = curses.newpad(grid_h + h_offset, grid_w + w_offset)
 
     # loop through array
     # print data
@@ -68,14 +69,14 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     #                 grid.addstr(y,x+dist_from_wall, data[row_idx][col_idx])
 
     # draw the horizontal lines
-    for h_line in range((h+h_offset)//cell_h):
+    for h_line in range((grid_h+h_offset)//cell_h):
         y = (h_line * cell_h) + 1
-        grid.hline(y,0,'-',w+w_offset)
+        grid.hline(y,0,'-',grid_w+w_offset)
     # draw the vertical lines
-    for v_line in range(0,(w+w_offset)//cell_w + 1):
+    for v_line in range(0,(grid_w+w_offset)//cell_w + 1):
         x = (v_line * cell_w)
         if x < grid_w+w_offset:
-            grid.vline(0,x,'|',h+h_offset)
+            grid.vline(0,x,'|',grid_h+h_offset)
 
     # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
@@ -88,11 +89,11 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     # get display height
     if current_row_idx * cell_h > grid_h:
         # print(h_offset)
-        if grid_h % cell_h == 0:
-            display_h = cell_h + h_offset
+        # if grid_h % cell_h == 0:
+        #     display_h = cell_h + h_offset
             # grid.refresh(cell_h+h_offset,0,top_margin,0,grid_h,w)
-        else:
-            display_h = h_offset
+        # else:
+        display_h = h_offset
             # grid.refresh(h_offset,0,top_margin,0,grid_h,w)
     else:
         # print(current_row_idx*cell_h)
@@ -123,7 +124,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
             display_w = 0
             # print current_col_idx * cell_w + dist_from_wall
 
-    grid.refresh(display_h,display_w,top_margin,0,grid_h,grid_w)
+    grid.refresh(display_h,display_w,top_margin,left_margin,h,w)
 
 def main(stdscr):
     file_name = sys.argv[1]

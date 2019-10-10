@@ -57,7 +57,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         y = int(element_parts[0]) * cell_h
         x = int(element_parts[1]) * cell_w
         element_str = element_parts[2]
-        if y < grid_h + h_offset and x+dist_from_wall < w+w_offset:
+        if y+top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
             grid.addstr(y,x+dist_from_wall, element_str)
 
     # # loop through array

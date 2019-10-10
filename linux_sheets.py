@@ -4,7 +4,7 @@ import curses
 
 # global variables
 # cell width and height let us do formatted printing and navigate through each cell
-cell_h = 2
+cell_h = 7
 cell_w = 12
 # gap at top and left of screen for the bar
 top_margin = 3
@@ -70,8 +70,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
     #                 grid.addstr(y,x+dist_from_wall, data[row_idx][col_idx])
 
     # draw the horizontal lines
-    for h_line in range((grid_h+h_offset)//cell_h):
-        y = (h_line * cell_h) + 1
+    for h_line in range(1,(grid_h+h_offset)//cell_h + 1):
+        y = (h_line * cell_h) - 1
         grid.hline(y,0,'-',grid_w+w_offset)
     # draw the vertical lines
     for v_line in range(0,(grid_w+w_offset)//cell_w + 1):

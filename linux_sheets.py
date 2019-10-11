@@ -95,6 +95,7 @@ def write_to_cell(stdscr, current_row_idx, current_col_idx):
         index_dict[str(current_row_idx) + str(current_col_idx)] = len(contents)
         contents.append([get_csv_string_format(user_input, current_row_idx, current_col_idx)])
     stdscr.move(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
+    # print index_dict
 
 def create_grid(stdscr, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
@@ -174,7 +175,6 @@ def main(stdscr):
         reader = csv.reader(file, delimiter='\n')
         # get as 2d list, but sum() flattens it into 1d list
         contents = list(reader)
-
     index_contents()
 
     # keep track of where user is

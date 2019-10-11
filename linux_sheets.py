@@ -70,7 +70,7 @@ def pop_up_help(stdscr):
     stdscr.clear()
 
 def save_data():
-    with open('test_for_test.csv', 'w') as csvFile:
+    with open('test_file_2.csv', 'w') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerows(contents)
 
@@ -93,7 +93,8 @@ def write_to_cell(stdscr, current_row_idx, current_col_idx):
         contents[index_dict[str(current_row_idx) + str(current_col_idx)]] = user_input
     else:
         index_dict[str(current_row_idx) + str(current_col_idx)] = len(contents)
-        contents.append(get_csv_string_format(user_input, current_row_idx, current_col_idx))
+        contents.append([get_csv_string_format(user_input, current_row_idx, current_col_idx)])
+    stdscr.move(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
 
 def create_grid(stdscr, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
@@ -120,14 +121,15 @@ def create_grid(stdscr, current_row_idx, current_col_idx):
 
     # loop through array
     # print data
-    for element in contents:
-        element_parts = str(element).split('|')
-        y = int(element_parts[0]) * cell_h
-        x = int(element_parts[1]) * cell_w
-        element_str = element_parts[2]
-        if y < grid_h + h_offset and x+dist_from_wall < grid_w+w_offset:
-        # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
-            grid.addstr(y,x+dist_from_wall, element_str)
+    for row in contents:
+        for element in row:
+            element_parts = str(element).split('|')
+            y = int(element_parts[0]) * cell_h
+            x = int(element_parts[1]) * cell_w
+            element_str = element_parts[2]
+            if y < grid_h + h_offset and x+dist_from_wall < grid_w+w_offset:
+            # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
+                grid.addstr(y,x+dist_from_wall, element_str)
 
     # draw the horizontal lines
     for h_line in range(1,(grid_h+h_offset)//cell_h + 1):
@@ -169,9 +171,9 @@ def main(stdscr):
     file_name = sys.argv[1]
     global contents
     with open(file_name, 'r') as file:
-        reader = csv.reader(file, delimiter=',')
+        reader = csv.reader(file, delimiter='\n')
         # get as 2d list, but sum() flattens it into 1d list
-        contents = sum(list(reader),[])
+        contents = list(reader)
 
     index_contents()
 

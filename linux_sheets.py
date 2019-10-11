@@ -3,35 +3,77 @@ import sys
 import curses
 
 # global variables
+user_exited = False
 # cell width and height let us do formatted printing and navigate through each cell
-cell_h = 7
+cell_h = 2
 cell_w = 12
 # gap at top and left of screen for the bar
 top_margin = 3
+bottom_margin = 1
 left_margin = 3
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
 
+def navigate_help_menu():
+    pass
+
+
 def pop_up_help(stdscr):
     h, w = stdscr.getmaxyx()
-    manual = curses.newwin(h, w, 0, 0)
+    # manual = curses.newpad(h, w)
+    manual = curses.newwin(h, w)
     manual.box()
     manual.addstr(1,1,"this is the help menu")
     manual.addstr(2,1,"Navigation: Arrow keys")
     manual.addstr(3,1,"To input data: 'i', enter data")
+    manual.addstr(3,1,"To input data: 'i', enter data")
+    # manual.refresh(0,0,0,0,h,w)
     manual.refresh()
+    exit_menu = False
+    manual_y = 0
+    manual_x = 0
+    while exit_menu == False:
+        key = stdscr.getch()
+        navigating = False
+        if key == curses.KEY_UP and manual_y > 0:
+            manual_y -=1
+            navigating = True
+        elif key == curses.KEY_DOWN:
+            manual_y += 1
+            navigating = True
+        elif key == curses.KEY_LEFT and manual_x > 0:
+            manual_x -= 1
+            navigating = True
+        elif key == curses.KEY_RIGHT:
+            manual_x += 1
+            navigating = True
+        if navigating == True:
+            navigate_help_menu()
+        elif key == 27:
+            exit_menu = True
+    stdscr.clear()
 
+
+def big_commands(stdscr):
+    h, w = stdscr.getmaxyx()
+    curses.echo()
+    stdscr.addstr(h-1,0,":")
+    command = stdscr.getstr(h-1,1)
+    curses.noecho()
+    if command == "wq":
+        global user_exited
+        user_exited = True
 
 def write_to_cell(stdscr, current_row_idx, current_col_idx):
     curses.echo()
     stdscr.getstr(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall)
     curses.noecho()
 
-def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
+def createGrid(stdscr, data, current_row_idx, current_col_idx):
     h, w = stdscr.getmaxyx()
 
     # height and width of the grid window
-    grid_h = h - top_margin
+    grid_h = h - top_margin - bottom_margin
     grid_w = w - left_margin
     # offsets for when user scrolls down
     h_offset = 0
@@ -57,17 +99,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         y = int(element_parts[0]) * cell_h
         x = int(element_parts[1]) * cell_w
         element_str = element_parts[2]
-        if y+top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
+        if y < grid_h + h_offset and x+dist_from_wall < w+w_offset: #if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
             grid.addstr(y,x+dist_from_wall, element_str)
-
-    # # loop through array
-    # for row_idx, row in enumerate(data):
-    #     y = (row_idx * cell_h)
-    #     for col_idx in range(max_row_len):
-    #         x = col_idx * cell_w
-    #         if col_idx < len(data[row_idx]):
-    #             if y < h + h_offset and x+dist_from_wall < w+w_offset:
-    #                 grid.addstr(y,x+dist_from_wall, data[row_idx][col_idx])
 
     # draw the horizontal lines
     for h_line in range(1,(grid_h+h_offset)//cell_h + 1):
@@ -79,11 +112,8 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
         if x < grid_w+w_offset:
             grid.vline(0,x,'|',grid_h+h_offset)
 
-    # print("current",current_row_idx * cell_h,"height = ",h+h_offset)
     # refresh pad depending on where user is and move cursor
     grid.move((current_row_idx * cell_h), dist_from_wall+(current_col_idx * cell_w))
-    # print current_col_idx * cell_w + dist_from_wall
-    # print current_row_idx * cell_h
     # variables for changing what portions of the screen to display
     display_h = 0
     display_w = 0
@@ -125,7 +155,7 @@ def createGrid(stdscr, data, max_row_len, current_row_idx, current_col_idx):
             display_w = 0
             # print current_col_idx * cell_w + dist_from_wall
 
-    grid.refresh(display_h,display_w,top_margin,left_margin,h,w)
+    grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
 
 def main(stdscr):
     file_name = sys.argv[1]
@@ -135,7 +165,6 @@ def main(stdscr):
         # get as 2d list, but sum() flattens it into 1d list
         contents = sum(list(reader),[])
     # stdscr = curses.initscr()
-    max_row_len = len(max(contents,key=len))
 
     # keep track of where user is
     current_row_idx = 0
@@ -143,10 +172,10 @@ def main(stdscr):
 
     # initial drawing of grid
     stdscr.refresh()
-    createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
+    createGrid(stdscr, contents, current_row_idx, current_col_idx)
 
 
-    while 1:
+    while user_exited == False:
         # read in user input
         key = stdscr.getch()
         # user navigation
@@ -154,27 +183,24 @@ def main(stdscr):
         if key == curses.KEY_UP and current_row_idx > 0:
             current_row_idx -=1
             navigating = True
-        elif key == curses.KEY_DOWN: #elif key == curses.KEY_DOWN and current_row_idx < len(contents) - 1:
+        elif key == curses.KEY_DOWN:
             current_row_idx += 1
             navigating = True
         elif key == curses.KEY_LEFT and current_col_idx > 0:
             current_col_idx -= 1
             navigating = True
-        elif key == curses.KEY_RIGHT: #and current_col_idx < (max_row_len - 1)
+        elif key == curses.KEY_RIGHT:
             current_col_idx += 1
             navigating = True
         elif key == ord('h'):
             pop_up_help(stdscr)
         elif key == ord('i'):
             write_to_cell(stdscr, current_row_idx, current_col_idx)
+        elif key == ord(':'):
+            big_commands(stdscr)
+            print user_exited
         if navigating is True:
-            createGrid(stdscr, contents, max_row_len, current_row_idx, current_col_idx)
-    # # terminates a curses program
-    # curses.nocbreak()
-    # stdscr.keypad(False)
-    # curses.echo()
-    # # restores terminal to original mode
-    # curses.endwin()
+            createGrid(stdscr, contents, current_row_idx, current_col_idx)
 
 if __name__ == '__main__':
     curses.wrapper(main)

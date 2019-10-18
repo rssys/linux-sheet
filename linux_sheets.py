@@ -20,7 +20,9 @@ bottom_margin = 1
 left_margin = 3
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
-
+# to keep track of where the screen is to determine if scrolling is needed
+current_display_h = 0
+current_display_w = 0
 
 def get_csv_string_format(user_input, row, col):
     return str(row) + "|" + str(col) + "|" + user_input
@@ -186,6 +188,9 @@ def create_with_grid_lines(stdscr):
 def create_without_grid_lines(stdscr):
     global current_row_idx
     global current_col_idx
+    global current_display_h
+    global current_display_w
+
     h, w = stdscr.getmaxyx()
 
     # height and width of the grid window
@@ -240,7 +245,18 @@ def create_without_grid_lines(stdscr):
         #     display_w = cell_w
         # else:
         display_w = 0
+
     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
+    # # decide if we need to scroll down
+    # if display_h > current_display_h:
+    #     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
+    #     current_display_h = display_h
+    # # decide if we need to scroll up
+    # elif current_row_idx < current_display_h:
+    #     grid.refresh(current_row_idx,display_w,top_margin,left_margin,h-bottom_margin,w)
+    #     current_display_h = current_row_idx
+    # else:
+    #     grid.refresh(current_display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
 
 def main(stdscr):
     file_name = sys.argv[1]

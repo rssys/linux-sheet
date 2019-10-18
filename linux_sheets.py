@@ -6,6 +6,9 @@ import curses
 # the contents of the csv file
 contents = []
 index_dict = {}
+# keep track of where user is
+current_row_idx = 0
+current_col_idx = 0
 # boolean to keep track of when to exit the program
 user_exited = False
 # cell width and height let us do formatted printing and navigate through each cell
@@ -85,7 +88,9 @@ def big_commands(stdscr):
         user_exited = True
         save_data()
 
-def write_to_cell(stdscr, current_row_idx, current_col_idx):
+def write_to_cell(stdscr):
+    global current_row_idx
+    global current_col_idx
     curses.echo()
     user_input = stdscr.getstr(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
     curses.noecho()
@@ -97,7 +102,17 @@ def write_to_cell(stdscr, current_row_idx, current_col_idx):
     stdscr.move(current_row_idx * cell_h + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
     # print index_dict
 
-def create_grid(stdscr, current_row_idx, current_col_idx):
+def print_row_numbers(stdscr, h_offset, grid_h):
+    # print row numbers and column letters on top and left margins
+    for a in range(grid_h):
+        stdscr.addstr(top_margin+a, 0, str(a+h_offset))
+    stdscr.refresh()
+def print_col_letters(stdscr, w_offset, grid_w):
+    pass
+
+def create_with_grid_lines(stdscr):
+    global current_row_idx
+    global current_col_idx
     h, w = stdscr.getmaxyx()
 
     # height and width of the grid window
@@ -168,6 +183,65 @@ def create_grid(stdscr, current_row_idx, current_col_idx):
 
     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
 
+def create_without_grid_lines(stdscr):
+    global current_row_idx
+    global current_col_idx
+    h, w = stdscr.getmaxyx()
+
+    # height and width of the grid window
+    grid_h = h - top_margin - bottom_margin
+    grid_w = w - left_margin
+    # offsets for when user scrolls down
+    h_offset = 0
+    w_offset = 0
+
+    # set offsets
+    if current_row_idx >= grid_h:
+        h_offset = current_row_idx - grid_h + 1 #the +1 accounts for when current_row_idx == grid_h, we need to push the window up one because we can't write to the edge of the window
+    if current_col_idx * cell_w + dist_from_wall >= grid_w:
+        w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
+        # print w_offset
+        w_offset += (cell_w - w_offset % cell_w)
+        # print w_offset
+
+    # create the grid
+    grid = curses.newpad(grid_h + h_offset, grid_w + w_offset)
+
+    # loop through array
+    # print data
+    for row in contents:
+        for element in row:
+            element_parts = str(element).split('|')
+            y = int(element_parts[0])
+            x = int(element_parts[1]) * cell_w
+            element_str = element_parts[2]
+            if y < grid_h + h_offset and x+dist_from_wall < grid_w+w_offset:
+            # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
+                grid.addstr(y,x+dist_from_wall, element_str)
+
+    print_row_numbers(stdscr, h_offset, grid_h)
+    # refresh pad depending on where user is and move cursor
+    grid.move((current_row_idx), dist_from_wall+(current_col_idx * cell_w))
+    # variables for changing what portions of the screen to display
+    display_h = 0
+    display_w = 0
+
+    # get display height
+    if current_row_idx >= grid_h:
+        display_h = h_offset
+    else:
+        display_h = 0
+
+    # get display width
+    if current_col_idx * cell_w + dist_from_wall >= grid_w:
+        display_w = w_offset
+    else:
+        # if current_col_idx * cell_w + dist_from_wall == grid_w:
+        #     display_w = cell_w
+        # else:
+        display_w = 0
+    grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
+
 def main(stdscr):
     file_name = sys.argv[1]
     global contents
@@ -178,12 +252,13 @@ def main(stdscr):
     index_contents()
 
     # keep track of where user is
-    current_row_idx = 0
-    current_col_idx = 0
+    global current_row_idx
+    global current_col_idx
 
     # initial drawing of grid
     stdscr.refresh()
-    create_grid(stdscr, current_row_idx, current_col_idx)
+    # create_with_grid_lines(stdscr)
+    create_without_grid_lines(stdscr)
 
 
     while user_exited == False:
@@ -206,12 +281,13 @@ def main(stdscr):
         elif key == ord('h'):
             pop_up_help(stdscr)
         elif key == ord('i'):
-            write_to_cell(stdscr, current_row_idx, current_col_idx)
+            write_to_cell(stdscr)
         elif key == ord(':'):
             big_commands(stdscr)
             print user_exited
         if navigating is True:
-            create_grid(stdscr, current_row_idx, current_col_idx)
+            # create_with_grid_lines(stdscr)
+            create_without_grid_lines(stdscr)
 
 if __name__ == '__main__':
     curses.wrapper(main)

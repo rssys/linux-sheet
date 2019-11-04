@@ -6,6 +6,9 @@ import curses
 # the contents of the csv file
 contents = []
 index_dict = {}
+# placeholder variables for the top left corner so we can know when to scroll
+h_holder = 0
+w_holder = 0
 # keep track of where user is
 current_row_idx = 0
 current_col_idx = 0
@@ -204,6 +207,14 @@ def create_with_grid_lines(stdscr):
 
     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
 
+def get_dimensions(stdscr):
+    h, w = stdscr.getmaxyx()
+
+    # height and width of the grid window
+    grid_h = h - top_margin - bottom_margin
+    grid_w = w - left_margin
+    return grid_h, grid_w
+
 def create_without_grid_lines(stdscr):
     global current_row_idx
     global current_col_idx
@@ -211,10 +222,7 @@ def create_without_grid_lines(stdscr):
     global current_display_w
 
     h, w = stdscr.getmaxyx()
-
-    # height and width of the grid window
-    grid_h = h - top_margin - bottom_margin
-    grid_w = w - left_margin
+    grid_h, grid_w = get_dimensions(stdscr)
     # offsets for when user scrolls down
     h_offset = 0
     w_offset = 0
@@ -248,25 +256,25 @@ def create_without_grid_lines(stdscr):
     # refresh pad depending on where user is and move cursor
     grid.move((current_row_idx), dist_from_wall+(current_col_idx * cell_w))
     # variables for changing what portions of the screen to display
-    display_h = 0
-    display_w = 0
+    # display_h = 0
+    # display_w = 0
+    #
+    # # get display height
+    # if current_row_idx >= grid_h:
+    #     display_h = h_offset
+    # else:
+    #     display_h = 0
+    #
+    # # get display width
+    # if current_col_idx * cell_w + dist_from_wall >= grid_w:
+    #     display_w = w_offset
+    # else:
+    #     # if current_col_idx * cell_w + dist_from_wall == grid_w:
+    #     #     display_w = cell_w
+    #     # else:
+    #     display_w = 0
 
-    # get display height
-    if current_row_idx >= grid_h:
-        display_h = h_offset
-    else:
-        display_h = 0
-
-    # get display width
-    if current_col_idx * cell_w + dist_from_wall >= grid_w:
-        display_w = w_offset
-    else:
-        # if current_col_idx * cell_w + dist_from_wall == grid_w:
-        #     display_w = cell_w
-        # else:
-        display_w = 0
-
-    grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
+    grid.refresh(h_holder,w_holder,top_margin,left_margin,h-bottom_margin,w)
     # # decide if we need to scroll down
     # if display_h > current_display_h:
     #     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
@@ -290,6 +298,9 @@ def main(stdscr):
     # keep track of where user is
     global current_row_idx
     global current_col_idx
+    # keep track of when we need to scroll
+    global h_holder
+    global w_holder
     # create color schemes for the top and bottom margins
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
@@ -302,19 +313,29 @@ def main(stdscr):
     while user_exited == False:
         # read in user input
         key = stdscr.getch()
+        # get dimensions to check for scrolling
+        grid_h, grid_w = get_dimensions(stdscr)
         # user navigation
         navigating = False
         if key == curses.KEY_UP and current_row_idx > 0:
             current_row_idx -=1
+            if current_row_idx <= h_holder:
+                h_holder -= 1
             navigating = True
         elif key == curses.KEY_DOWN:
             current_row_idx += 1
+            if current_row_idx >= h_holder + grid_h:
+                h_holder += 1
             navigating = True
         elif key == curses.KEY_LEFT and current_col_idx > 0:
             current_col_idx -= 1
+            if current_col_idx * cell_w +dist_from_wall <= w_holder:
+                w_holder -= cell_w
             navigating = True
         elif key == curses.KEY_RIGHT:
             current_col_idx += 1
+            if current_col_idx * cell_w + dist_from_wall >= w_holder + grid_w:
+                w_holder += cell_w
             navigating = True
         elif key == ord('h'):
             pop_up_help(stdscr)

@@ -117,18 +117,18 @@ def get_col_string(num):
         string = chr(65 + remainder) + string
     return string
 
-def print_row_numbers(stdscr, h_offset, grid_h):
+def print_row_numbers(stdscr, grid_h):
     # print row numbers and column letters on top and left margins
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_h):
-        stdscr.addstr(top_margin+a, 0, str(a+h_offset))
+        stdscr.addstr(top_margin+a, 0, str(a+h_holder))
     # stdscr.attroff(curses.color_pair(1))
     stdscr.refresh()
 
-def print_col_letters(stdscr, w_offset, grid_w, cell_w):
+def print_col_letters(stdscr, grid_w, cell_w):
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_w//cell_w):
-        a_str = get_col_string(w_offset//cell_w + a + 1) #we send in 0 on the first call but need to start at 1
+        a_str = get_col_string(w_holder//cell_w + a + 1) #we send in 0 on the first call but need to start at 1
         stdscr.addstr(2, left_margin + (a*cell_w), a_str)
         # stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
     # stdscr.attroff(curses.color_pair(1))
@@ -251,8 +251,8 @@ def create_without_grid_lines(stdscr):
             # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
                 grid.addstr(y,x+dist_from_wall, element_str)
 
-    print_row_numbers(stdscr, h_offset, grid_h)
-    print_col_letters(stdscr, w_offset, grid_w, cell_w)
+    print_row_numbers(stdscr, grid_h)
+    print_col_letters(stdscr, grid_w, cell_w)
     # refresh pad depending on where user is and move cursor
     grid.move((current_row_idx), dist_from_wall+(current_col_idx * cell_w))
     # variables for changing what portions of the screen to display
@@ -319,7 +319,7 @@ def main(stdscr):
         navigating = False
         if key == curses.KEY_UP and current_row_idx > 0:
             current_row_idx -=1
-            if current_row_idx <= h_holder:
+            if current_row_idx < h_holder:
                 h_holder -= 1
             navigating = True
         elif key == curses.KEY_DOWN:

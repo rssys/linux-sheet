@@ -100,14 +100,14 @@ def write_to_cell(stdscr):
     global current_row_idx
     global current_col_idx
     curses.echo()
-    user_input = stdscr.getstr(current_row_idx + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
+    user_input = stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
     curses.noecho()
     if (str(current_row_idx) + str(current_col_idx)) in index_dict:
         contents[index_dict[str(current_row_idx) + str(current_col_idx)]] = [get_csv_string_format(user_input, current_row_idx, current_col_idx)]
     else:
         index_dict[str(current_row_idx) + str(current_col_idx)] = len(contents)
         contents.append([get_csv_string_format(user_input, current_row_idx, current_col_idx)])
-    stdscr.move(current_row_idx + top_margin, current_col_idx * cell_w + dist_from_wall + left_margin)
+    stdscr.move(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
     # print index_dict
 
 def get_col_string(num):
@@ -247,8 +247,10 @@ def create_without_grid_lines(stdscr):
             y = int(element_parts[0])
             x = int(element_parts[1]) * cell_w
             element_str = element_parts[2]
-            if y < grid_h + h_offset and x+dist_from_wall < grid_w+w_offset:
+            # if y < grid_h + h_offset and x < grid_w + w_offset:
+            if y < grid_h + h_offset and x + dist_from_wall < grid_w + w_offset:
             # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
+            # if y < h_holder + grid_h and x + dist_from_wall < w_holder + grid_w:
                 grid.addstr(y,x+dist_from_wall, element_str)
 
     print_row_numbers(stdscr, grid_h)
@@ -275,16 +277,6 @@ def create_without_grid_lines(stdscr):
     #     display_w = 0
 
     grid.refresh(h_holder,w_holder,top_margin,left_margin,h-bottom_margin,w)
-    # # decide if we need to scroll down
-    # if display_h > current_display_h:
-    #     grid.refresh(display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
-    #     current_display_h = display_h
-    # # decide if we need to scroll up
-    # elif current_row_idx < current_display_h:
-    #     grid.refresh(current_row_idx,display_w,top_margin,left_margin,h-bottom_margin,w)
-    #     current_display_h = current_row_idx
-    # else:
-    #     grid.refresh(current_display_h,display_w,top_margin,left_margin,h-bottom_margin,w)
 
 def main(stdscr):
     file_name = sys.argv[1]

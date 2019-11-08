@@ -247,11 +247,16 @@ def create_without_grid_lines(stdscr):
             y = int(element_parts[0])
             x = int(element_parts[1]) * cell_w
             element_str = element_parts[2]
-            # if y < grid_h + h_offset and x < grid_w + w_offset:
-            if y < grid_h + h_offset and x + dist_from_wall < grid_w + w_offset:
+
+            # if y < grid_h + h_offset and x + dist_from_wall < grid_w + w_offset:
             # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
-            # if y < h_holder + grid_h and x + dist_from_wall < w_holder + grid_w:
-                grid.addstr(y,x+dist_from_wall, element_str)
+            if y < h_offset + grid_h and y >= h_holder:
+                if x + dist_from_wall < w_offset + grid_w and x + dist_from_wall >= w_holder:
+                    try:
+                        grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
+                    except(curses.error):
+                        print (grid_h+h_holder,grid_h+h_offset)
+                    # grid.addstr(y,x + dist_from_wall, element_str)
 
     print_row_numbers(stdscr, grid_h)
     print_col_letters(stdscr, grid_w, cell_w)
@@ -310,7 +315,7 @@ def main(stdscr):
         # user navigation
         navigating = False
         if key == curses.KEY_UP and current_row_idx > 0:
-            current_row_idx -=1
+            current_row_idx -= 1
             if current_row_idx < h_holder:
                 h_holder -= 1
             navigating = True

@@ -111,6 +111,8 @@ def write_to_cell(stdscr):
         contents.append([get_csv_string_format(user_input, current_row_idx, current_col_idx)])
     #TODO update the data
     stdscr.move(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
+    # repaint the grid so the previous word is not still on screen
+    create_without_grid_lines(stdscr)
     # print index_dict
 
 def get_col_string(num):
@@ -124,18 +126,18 @@ def print_row_numbers(stdscr, grid_h):
     # print row numbers and column letters on top and left margins
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_h):
-        stdscr.addstr(top_margin+a, 0, str(a+h_holder+1)) #add the plus one becuase we start at 1
+        stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1)) #add the plus one becuase we start at 1
+        # stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1).rjust(left_margin)) #add the plus one becuase we start at 1
     # stdscr.attroff(curses.color_pair(1))
-    stdscr.refresh()
+
 
 def print_col_letters(stdscr, grid_w, cell_w):
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_w//cell_w + 1): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
         a_str = get_col_string(w_holder//cell_w + a + 1) #we send in 0 on the first call but need to start at 1
-        stdscr.addstr(2, left_margin + (a*cell_w), a_str)
+        stdscr.addstr(2, left_margin + (a*cell_w), a_str.center(cell_w))
         # stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
     # stdscr.attroff(curses.color_pair(1))
-    stdscr.refresh()
 
 def create_with_grid_lines(stdscr):
     global current_row_idx
@@ -227,10 +229,8 @@ def print_data(grid, grid_h, grid_w):
             x = int(element_parts[1]) * cell_w
             element_str = element_parts[2]
 
-            # if y < grid_h + h_offset and x + dist_from_wall < grid_w + w_offset:
-            # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
             if y < h_holder + grid_h and y >= h_holder:
-                if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder:
+                if x + dist_from_wall < w_holder + grid_w  and x + dist_from_wall >= w_holder:
                 # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner
                 # being written to which causes an error so find a way around that
                     # grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
@@ -238,9 +238,18 @@ def print_data(grid, grid_h, grid_w):
                     #     grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
                     # except(curses.error):
                     #     print (grid_h+h_holder, grid_h+h_offset)
-                    grid.addstr(y,x + dist_from_wall, element_str)
+                    # check if we need to truncate the right most column strings
+                    if w_holder + grid_w - (x + dist_from_wall) < cell_w:
+                        grid.addstr(y,x + dist_from_wall, element_str[:(w_holder + grid_w - (x + dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
+                    else:
+                        grid.addstr(y,x + dist_from_wall, element_str[:cell_w])
+
+def print_current_location(stdscr):
+    stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx))
 
 def create_without_grid_lines(stdscr):
+    # need to erase to clear any strings that were previously painted that now shouldn't be there
+    stdscr.erase()
     global current_row_idx
     global current_col_idx
     global current_display_h
@@ -252,10 +261,13 @@ def create_without_grid_lines(stdscr):
     # create the grid
     grid = curses.newpad(grid_h + h_holder, grid_w + w_holder)
 
+    print_current_location(stdscr)
     print_data(grid, grid_h, grid_w)
 
-    print_row_numbers(stdscr, grid_h)
+
     print_col_letters(stdscr, grid_w, cell_w)
+    print_row_numbers(stdscr, grid_h)
+    stdscr.refresh()
     # refresh pad depending on where user is and move cursor
     grid.move((current_row_idx), dist_from_wall+(current_col_idx * cell_w))
     grid.refresh(h_holder,w_holder,top_margin,left_margin,h-bottom_margin,w)
@@ -278,8 +290,8 @@ def main(stdscr):
     # create color schemes for the top and bottom margins
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-    # initial drawing of grid
-    stdscr.refresh()
+    # # initial drawing of grid
+    # stdscr.refresh()
     # create_with_grid_lines(stdscr)
     create_without_grid_lines(stdscr)
 

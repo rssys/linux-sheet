@@ -121,13 +121,13 @@ def print_row_numbers(stdscr, grid_h):
     # print row numbers and column letters on top and left margins
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_h):
-        stdscr.addstr(top_margin+a, 0, str(a+h_holder+1)) //add the plus one becuase we start at 1
+        stdscr.addstr(top_margin+a, 0, str(a+h_holder+1)) #add the plus one becuase we start at 1
     # stdscr.attroff(curses.color_pair(1))
     stdscr.refresh()
 
 def print_col_letters(stdscr, grid_w, cell_w):
     # stdscr.attron(curses.color_pair(1))
-    for a in range(grid_w//cell_w + 1):
+    for a in range(grid_w//cell_w + 1): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
         a_str = get_col_string(w_holder//cell_w + a + 1) #we send in 0 on the first call but need to start at 1
         stdscr.addstr(2, left_margin + (a*cell_w), a_str)
         # stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
@@ -227,14 +227,14 @@ def create_without_grid_lines(stdscr):
     h_offset = 0
     w_offset = 0
 
-    # set offsets
-    if current_row_idx >= grid_h:
-        h_offset = current_row_idx - grid_h + 1 #the +1 accounts for when current_row_idx == grid_h, we need to push the window up one because we can't write to the edge of the window
-    if current_col_idx * cell_w + dist_from_wall >= grid_w:
-        w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
-        # print w_offset
-        w_offset += (cell_w - w_offset % cell_w)
-        # print w_offset
+    # # set offsets
+    # if current_row_idx >= grid_h:
+    #     h_offset = current_row_idx - grid_h + 1 #the +1 accounts for when current_row_idx == grid_h, we need to push the window up one because we can't write to the edge of the window
+    # if current_col_idx * cell_w + dist_from_wall >= grid_w:
+    #     w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
+    #     # print w_offset
+    #     w_offset += (cell_w - w_offset % cell_w)
+    #     # print w_offset
 
     # create the grid
     # grid = curses.newpad(grid_h + h_offset, grid_w + w_offset)
@@ -252,7 +252,9 @@ def create_without_grid_lines(stdscr):
             # if y < grid_h + h_offset and x + dist_from_wall < grid_w + w_offset:
             # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
             if y < h_holder + grid_h and y >= h_holder:
-                if x + dist_from_wall < w_holder + grid_w and x + dist_from_wall >= w_holder:
+                if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder:
+                # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner 
+                # being written to which causes an error so find a way around that
                     # grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
                     # try:
                     #     grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))

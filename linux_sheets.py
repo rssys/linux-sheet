@@ -100,13 +100,16 @@ def write_to_cell(stdscr):
     global current_row_idx
     global current_col_idx
     curses.echo()
-    user_input = stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
+    # user_input = stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
+    h, w = stdscr.getmaxyx()
+    user_input = stdscr.getstr(h-1, 0)
     curses.noecho()
     if (str(current_row_idx) + str(current_col_idx)) in index_dict:
         contents[index_dict[str(current_row_idx) + str(current_col_idx)]] = [get_csv_string_format(user_input, current_row_idx, current_col_idx)]
     else:
         index_dict[str(current_row_idx) + str(current_col_idx)] = len(contents)
         contents.append([get_csv_string_format(user_input, current_row_idx, current_col_idx)])
+    #TODO update the data
     stdscr.move(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
     # print index_dict
 
@@ -215,32 +218,7 @@ def get_dimensions(stdscr):
     grid_w = w - left_margin
     return grid_h, grid_w
 
-def create_without_grid_lines(stdscr):
-    global current_row_idx
-    global current_col_idx
-    global current_display_h
-    global current_display_w
-
-    h, w = stdscr.getmaxyx()
-    grid_h, grid_w = get_dimensions(stdscr)
-    # offsets for when user scrolls down
-    h_offset = 0
-    w_offset = 0
-
-    # # set offsets
-    # if current_row_idx >= grid_h:
-    #     h_offset = current_row_idx - grid_h + 1 #the +1 accounts for when current_row_idx == grid_h, we need to push the window up one because we can't write to the edge of the window
-    # if current_col_idx * cell_w + dist_from_wall >= grid_w:
-    #     w_offset = current_col_idx * cell_w + dist_from_wall - grid_w
-    #     # print w_offset
-    #     w_offset += (cell_w - w_offset % cell_w)
-    #     # print w_offset
-
-    # create the grid
-    # grid = curses.newpad(grid_h + h_offset, grid_w + w_offset)
-    grid = curses.newpad(grid_h + h_holder, grid_w + w_holder)
-
-    # loop through array
+def print_data(grid, grid_h, grid_w):
     # print data
     for row in contents:
         for element in row:
@@ -253,7 +231,7 @@ def create_without_grid_lines(stdscr):
             # if y + top_margin < grid_h + h_offset and x+dist_from_wall+left_margin < w+w_offset:
             if y < h_holder + grid_h and y >= h_holder:
                 if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder:
-                # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner 
+                # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner
                 # being written to which causes an error so find a way around that
                     # grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
                     # try:
@@ -262,29 +240,24 @@ def create_without_grid_lines(stdscr):
                     #     print (grid_h+h_holder, grid_h+h_offset)
                     grid.addstr(y,x + dist_from_wall, element_str)
 
+def create_without_grid_lines(stdscr):
+    global current_row_idx
+    global current_col_idx
+    global current_display_h
+    global current_display_w
+
+    h, w = stdscr.getmaxyx()
+    grid_h, grid_w = get_dimensions(stdscr)
+
+    # create the grid
+    grid = curses.newpad(grid_h + h_holder, grid_w + w_holder)
+
+    print_data(grid, grid_h, grid_w)
+
     print_row_numbers(stdscr, grid_h)
     print_col_letters(stdscr, grid_w, cell_w)
     # refresh pad depending on where user is and move cursor
     grid.move((current_row_idx), dist_from_wall+(current_col_idx * cell_w))
-    # variables for changing what portions of the screen to display
-    # display_h = 0
-    # display_w = 0
-    #
-    # # get display height
-    # if current_row_idx >= grid_h:
-    #     display_h = h_offset
-    # else:
-    #     display_h = 0
-    #
-    # # get display width
-    # if current_col_idx * cell_w + dist_from_wall >= grid_w:
-    #     display_w = w_offset
-    # else:
-    #     # if current_col_idx * cell_w + dist_from_wall == grid_w:
-    #     #     display_w = cell_w
-    #     # else:
-    #     display_w = 0
-
     grid.refresh(h_holder,w_holder,top_margin,left_margin,h-bottom_margin,w)
 
 def main(stdscr):

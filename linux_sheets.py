@@ -59,7 +59,7 @@ def pop_up_help(stdscr):
     exit_menu = False
     manual_y = 0
     manual_x = 0
-    while exit_menu == False:
+    while True:
         key = stdscr.getch()
         navigating = False
         if key == curses.KEY_UP and manual_y > 0:
@@ -77,7 +77,7 @@ def pop_up_help(stdscr):
         if navigating == True:
             navigate_help_menu()
         elif key == 27: #escape key
-            exit_menu = True
+            break
     create_without_grid_lines(stdscr)
 
 def save_data():
@@ -246,8 +246,8 @@ def print_data(grid, grid_h, grid_w):
                         grid.addstr(y,x + dist_from_wall, element_str[:cell_w])
 
 def print_current_location(stdscr):
-    # stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx))
-    stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx) + ' h_holder: '+str(h_holder) + ' w_holder: '+str(w_holder))
+    stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx))
+    # stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx) + ' h_holder: '+str(h_holder) + ' w_holder: '+str(w_holder))
 
 def create_without_grid_lines(stdscr):
     # need to erase to clear any strings that were previously painted that now shouldn't be there
@@ -265,7 +265,6 @@ def create_without_grid_lines(stdscr):
 
     print_current_location(stdscr)
     print_data(grid, grid_h, grid_w)
-
 
     print_col_letters(stdscr, grid_w, cell_w)
     print_row_numbers(stdscr, grid_h)

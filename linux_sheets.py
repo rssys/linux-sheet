@@ -76,9 +76,9 @@ def pop_up_help(stdscr):
             navigating = True
         if navigating == True:
             navigate_help_menu()
-        elif key == 27:
+        elif key == 27: #escape key
             exit_menu = True
-    stdscr.clear()
+    create_without_grid_lines(stdscr)
 
 def save_data():
     with open('test_file_2.csv', 'w') as csvFile:
@@ -126,14 +126,15 @@ def print_row_numbers(stdscr, grid_h):
     # print row numbers and column letters on top and left margins
     # stdscr.attron(curses.color_pair(1))
     for a in range(grid_h):
-        stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1)) #add the plus one becuase we start at 1
-        # stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1).rjust(left_margin)) #add the plus one becuase we start at 1
+        # stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1)) #add the plus one becuase we start at 1
+        stdscr.addstr(top_margin + a, 0, str(a + h_holder + 1).rjust(left_margin)) #add the plus one becuase we start at 1
     # stdscr.attroff(curses.color_pair(1))
 
 
 def print_col_letters(stdscr, grid_w, cell_w):
     # stdscr.attron(curses.color_pair(1))
-    for a in range(grid_w//cell_w + 1): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
+    for a in range(grid_w//cell_w): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
+    # for a in range(grid_w//cell_w + 1): this sometimes works but if you resize it a certain way it prints the last col unumber on the next row
         a_str = get_col_string(w_holder//cell_w + a + 1) #we send in 0 on the first call but need to start at 1
         stdscr.addstr(2, left_margin + (a*cell_w), a_str.center(cell_w))
         # stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
@@ -245,7 +246,8 @@ def print_data(grid, grid_h, grid_w):
                         grid.addstr(y,x + dist_from_wall, element_str[:cell_w])
 
 def print_current_location(stdscr):
-    stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx))
+    # stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx))
+    stdscr.addstr(0, 0, 'row: ' + str(current_row_idx) + ' col: ' + str(current_col_idx) + ' h_holder: '+str(h_holder) + ' w_holder: '+str(w_holder))
 
 def create_without_grid_lines(stdscr):
     # need to erase to clear any strings that were previously painted that now shouldn't be there
@@ -330,7 +332,12 @@ def main(stdscr):
         elif key == ord(':'):
             big_commands(stdscr)
             # print user_exited
-        if navigating is True:
+        if navigating is True or key == curses.KEY_RESIZE:
+            # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
+            if key == curses.KEY_RESIZE:
+                current_row_idx = h_holder
+                current_col_idx = w_holder//cell_w
+                stdscr.move(0, 0)
             # create_with_grid_lines(stdscr)
             create_without_grid_lines(stdscr)
 

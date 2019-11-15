@@ -81,7 +81,7 @@ def pop_up_help(stdscr):
     create_without_grid_lines(stdscr)
 
 def save_data():
-    with open('test_file_2.csv', 'w') as csvFile:
+    with open('test_file.csv', 'w') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerows(contents)
 
@@ -277,7 +277,7 @@ def main(stdscr):
     file_name = sys.argv[1]
     global contents
     with open(file_name, 'r') as file:
-        reader = csv.reader(file, delimiter='\n')
+        reader = csv.reader(file, delimiter=',')
         # get as 2d list, but sum() flattens it into 1d list
         contents = list(reader)
     index_contents(stdscr)

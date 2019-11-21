@@ -15,13 +15,17 @@ def main(stdscr):
 
     h, w = stdscr.getmaxyx()
     stdscr.refresh()
-    stdscr.move(0,0)
-    contents.append(['0|0|splendid'])
-    print int("['4")
-    for row in contents:
-        for element in row:
-            print element
-
+    # test appending to the list
+    contents.append([',,splendid'])
+    # print int("['4")
+    print contents
+    # for row in contents:
+    #     for element in row:
+    #         print element
+    stdscr.refresh()
+    with open('test_file.csv', 'w') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(contents)
     while True:
         key = stdscr.getch()
 

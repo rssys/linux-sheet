@@ -15,15 +15,20 @@ from help_menu import pop_up_help
 # def get_csv_string_format(user_input, row, col):
 #     return str(row) + "|" + str(col) + "|" + user_input
 
+# def index_contents(stdscr):
+#     for index, element in enumerate(settings.contents):
+#         element_parts = str(element).split('|')
+#         y = element_parts[0][2:] #we have to take from the second index because for some reason each element has the bracket and single quotes included
+#         x = element_parts[1]
+#         # stdscr.move(0,0)
+#         # stdscr.addstr(str(y))
+#         # break
+#         settings.index_dict[y + x] = index
+
 def index_contents(stdscr):
     for index, element in enumerate(settings.contents):
-        element_parts = str(element).split('|')
-        y = element_parts[0][2:] #we have to take from the second index because for some reason each element has the bracket and single quotes included
-        x = element_parts[1]
-        # stdscr.move(0,0)
-        # stdscr.addstr(str(y))
-        # break
-        settings.index_dict[y + x] = index
+        
+
 
 def navigate_help_menu():
     pass

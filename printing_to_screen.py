@@ -4,14 +4,19 @@ import curses
 import settings
 
 def print_current_location(stdscr):
-    if (str(settings.current_row_idx) + str(settings.current_col_idx)) in settings.index_dict:
-        coords_and_user_input = str(settings.contents[settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)]])
-        parts = coords_and_user_input[2:-2].split('|') #the [2:-2] is to trim the element so it doesn't have the [''] at the front and end
-        user_input = parts[2]
-        stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + user_input)
+    if settings.format == "my_format":
+        if (str(settings.current_row_idx) + str(settings.current_col_idx)) in settings.index_dict:
+            coords_and_user_input = str(settings.contents[settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)]])
+            parts = coords_and_user_input[2:-2].split('|') #the [2:-2] is to trim the element so it doesn't have the [''] at the front and end
+            user_input = parts[2]
+            stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + user_input)
+        else:
+            stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
     else:
-        stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
-
+        if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]) and settings.contents[settings.current_row_idx][settings.current_col_idx] is not '':
+                stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + settings.contents[settings.current_row_idx][settings.current_col_idx])
+        else:
+            stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
 def print_data(grid, grid_h, grid_w):
     # print data
     # TODO instead of looping through all the data, loop through every spot on screen and check if there is an element there
@@ -36,7 +41,7 @@ def print_data(grid, grid_h, grid_w):
                         if settings.w_holder + grid_w - (x + settings.dist_from_wall) < settings.cell_w:
                             grid.addstr(y,x + settings.dist_from_wall, element_str[:(settings.w_holder + grid_w - (x + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
                         else:
-                            grid.addstr(y,x + settings.dist_from_wall, element_str[:settings.cell_w-1])
+                            grid.addstr(y,x + settings.dist_from_wall, element_str[:settings.cell_w-1]) # the -1 is to give one space between each cell
     else:
         for row in range(settings.h_holder, settings.h_holder + grid_h):
             for col in range(settings.w_holder//settings.cell_w, (settings.w_holder + grid_w)//settings.cell_w):
@@ -45,7 +50,7 @@ def print_data(grid, grid_h, grid_w):
                     if settings.w_holder + grid_w - (col_position + settings.dist_from_wall) < settings.cell_w:
                         grid.addstr(row,col_position + settings.dist_from_wall, settings.contents[row][col][:(settings.w_holder + grid_w - (col_position + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
                     else:
-                        grid.addstr(row, col_position + settings.dist_from_wall, settings.contents[row][col][:settings.cell_w-1])
+                        grid.addstr(row, col_position + settings.dist_from_wall, settings.contents[row][col][:settings.cell_w-1]) # the -1 is to give one space between each cell
 
 def get_col_string(num):
     string = ""

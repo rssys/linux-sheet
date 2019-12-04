@@ -4,31 +4,48 @@ import curses
 import settings
 
 def print_current_location(stdscr):
-    stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
+    if (str(settings.current_row_idx) + str(settings.current_col_idx)) in settings.index_dict:
+        coords_and_user_input = str(settings.contents[settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)]])
+        parts = coords_and_user_input[2:-2].split('|') #the [2:-2] is to trim the element so it doesn't have the [''] at the front and end
+        user_input = parts[2]
+        stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + user_input)
+    else:
+        stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
 
 def print_data(grid, grid_h, grid_w):
     # print data
-    for row in settings.contents:
-        for element in row:
-            element_parts = str(element).split('|')
-            y = int(element_parts[0])
-            x = int(element_parts[1]) * settings.cell_w
-            element_str = element_parts[2]
+    # TODO instead of looping through all the data, loop through every spot on screen and check if there is an element there
+    if settings.format == "my_format":
+        for row in settings.contents:
+            for element in row:
+                element_parts = str(element).split('|')
+                y = int(element_parts[0])
+                x = int(element_parts[1]) * settings.cell_w
+                element_str = element_parts[2]
 
-            if y < settings.h_holder + grid_h and y >= settings.h_holder:
-                if x + settings.dist_from_wall < settings.w_holder + grid_w  and x + settings.dist_from_wall >= settings.w_holder:
-                # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner
-                # being written to which causes an error so find a way around that
-                    # grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
-                    # try:
-                    #     grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
-                    # except(curses.error):
-                    #     print (grid_h+h_holder, grid_h+h_offset)
-                    # check if we need to truncate the right most column strings
-                    if settings.w_holder + grid_w - (x + settings.dist_from_wall) < settings.cell_w:
-                        grid.addstr(y,x + settings.dist_from_wall, element_str[:(settings.w_holder + grid_w - (x + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
+                if y < settings.h_holder + grid_h and y >= settings.h_holder:
+                    if x + settings.dist_from_wall < settings.w_holder + grid_w  and x + settings.dist_from_wall >= settings.w_holder:
+                    # TODO if x + dist_from_wall < w_holder + grid_w - cell_w and x + dist_from_wall >= w_holder: this will write the strings but it could result in the bottom right corner
+                    # being written to which causes an error so find a way around that
+                        # grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
+                        # try:
+                        #     grid.addstr(y,x + dist_from_wall, str(y)+" "+str(x)+" "+str(h_holder)+" "+str(w_holder))
+                        # except(curses.error):
+                        #     print (grid_h+h_holder, grid_h+h_offset)
+                        # check if we need to truncate the right most column strings
+                        if settings.w_holder + grid_w - (x + settings.dist_from_wall) < settings.cell_w:
+                            grid.addstr(y,x + settings.dist_from_wall, element_str[:(settings.w_holder + grid_w - (x + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
+                        else:
+                            grid.addstr(y,x + settings.dist_from_wall, element_str[:settings.cell_w-1])
+    else:
+        for row in range(settings.h_holder, settings.h_holder + grid_h):
+            for col in range(settings.w_holder//settings.cell_w, (settings.w_holder + grid_w)//settings.cell_w):
+                col_position = col * settings.cell_w
+                if row < len(settings.contents) and col < len(settings.contents[0]):
+                    if settings.w_holder + grid_w - (col_position + settings.dist_from_wall) < settings.cell_w:
+                        grid.addstr(row,col_position + settings.dist_from_wall, settings.contents[row][col][:(settings.w_holder + grid_w - (col_position + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
                     else:
-                        grid.addstr(y,x + settings.dist_from_wall, element_str[:settings.cell_w])
+                        grid.addstr(row, col_position + settings.dist_from_wall, settings.contents[row][col][:settings.cell_w-1])
 
 def get_col_string(num):
     string = ""
@@ -45,7 +62,6 @@ def print_col_letters(stdscr, grid_w):
         stdscr.addstr(2, settings.left_margin + (a*settings.cell_w), a_str.center(settings.cell_w))
         # stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
     # stdscr.attroff(curses.color_pair(1))
-
 
 def print_row_numbers(stdscr, grid_h):
     # print row numbers and column letters on top and left margins

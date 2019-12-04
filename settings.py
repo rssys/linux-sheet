@@ -1,6 +1,11 @@
 # global variables
+# the name of the file we are editing
+file_name = ""
+# the format to be used, this will either be regular CSV with commas or my own format with coordinates attached
+format = ""
 # the contents of the csv file
 contents = []
+# this dictionary is for my own format where each input has coordinates attached to it
 index_dict = {}
 # placeholder variables for the top left corner so we can know when to scroll
 h_holder = 0
@@ -13,7 +18,7 @@ user_exited = False
 # cell width and height let us do formatted printing and navigate through each cell
 cell_h = 2
 cell_w = 12
-# gap at top and left of screen for the bar
+# gap at top, bottom, and left of screen for the row and column bars and for when user enters input
 top_margin = 3
 bottom_margin = 1
 left_margin = 3

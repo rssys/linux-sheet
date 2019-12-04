@@ -12,11 +12,6 @@ from printing_to_screen import print_row_numbers
 def create_without_grid_lines(stdscr):
     # need to erase to clear any strings that were previously painted that now shouldn't be there
     stdscr.erase()
-    # global current_row_idx
-    # global current_col_idx
-    # global current_display_h
-    # global current_display_w
-
     h, w = stdscr.getmaxyx()
     grid_h, grid_w = get_dimensions(stdscr)
 

@@ -27,3 +27,7 @@ dist_from_wall = 1
 # to keep track of where the screen is to determine if scrolling is needed
 current_display_h = 0
 current_display_w = 0
+# number of rows and cols to quick scroll
+# TODO use these, right now I am just scrolling by the screen height and width
+h_q_scroll = 0
+w_q_scroll = 0

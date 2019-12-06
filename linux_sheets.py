@@ -12,9 +12,8 @@ from grid_creation import create_with_grid_lines
 from dimensions import get_dimensions
 from help_menu import navigate_help_menu
 from help_menu import pop_up_help
-
-def navigate_help_menu():
-    pass
+from features import quick_scroll
+from features import go_to
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -25,6 +24,11 @@ def big_commands(stdscr):
     if command == "wq":
         settings.user_exited = True
         save_data()
+    try:
+        row_num = int(command)
+        go_to(row_num)
+    except ValueError:
+        pass
 
 def main(stdscr):
     settings.file_name = sys.argv[1]
@@ -70,11 +74,19 @@ def main(stdscr):
         elif key == ord('h'):
             pop_up_help(stdscr)
             # repaint the grid when exiting help menu
-            create_without_grid_lines(stdscr)
+            # create_without_grid_lines(stdscr)
         elif key == ord('i'):
             write_to_cell(stdscr)
             # repaint the grid to update the new word written to the screen
-            create_without_grid_lines(stdscr)
+            # create_without_grid_lines(stdscr)
+        elif key == ord('w'):
+            quick_scroll(stdscr, 'w')
+        elif key == ord('a'):
+            quick_scroll(stdscr, 'a')
+        elif key == ord('s'):
+            quick_scroll(stdscr, 's')
+        elif key == ord('d'):
+            quick_scroll(stdscr, 'd')
         elif key == ord(':'):
             big_commands(stdscr)
             # print user_exited
@@ -85,7 +97,7 @@ def main(stdscr):
                 settings.current_col_idx = settings.w_holder//settings.cell_w
                 stdscr.move(0, 0)
             # create_with_grid_lines(stdscr)
-            create_without_grid_lines(stdscr)
-
+            # create_without_grid_lines(stdscr)
+        create_without_grid_lines(stdscr)
 if __name__ == '__main__':
     curses.wrapper(main)

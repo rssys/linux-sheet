@@ -17,6 +17,7 @@ def print_current_location(stdscr):
                 stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + settings.contents[settings.current_row_idx][settings.current_col_idx])
         else:
             stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
+
 def print_data(grid, grid_h, grid_w):
     # print data
     # TODO instead of looping through all the data, loop through every spot on screen and check if there is an element there

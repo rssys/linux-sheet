@@ -63,7 +63,7 @@ def main(stdscr):
             navigating = True
         elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
             settings.current_col_idx -= 1
-            if settings.current_col_idx * settings.cell_w +settings.dist_from_wall <= settings.w_holder:
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
                 settings.w_holder -= settings.cell_w
             navigating = True
         elif key == curses.KEY_RIGHT:
@@ -99,5 +99,6 @@ def main(stdscr):
             # create_with_grid_lines(stdscr)
             # create_without_grid_lines(stdscr)
         create_without_grid_lines(stdscr)
+
 if __name__ == '__main__':
     curses.wrapper(main)

@@ -20,14 +20,14 @@ def main(stdscr):
 
     # pad contents with commas
     max_len = max(len(x) for x in contents)
-    print max_len
+    print(max_len)
     for index, element in enumerate(contents):
         x =len(element)
         for y in range(x, max_len):
             contents[index].append('')
-            print y, max_len
+            print(y, max_len)
     # print int("['4")
-    print contents
+    print(contents)
     # for row in contents:
     #     for element in row:
     #         print element

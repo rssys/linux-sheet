@@ -63,5 +63,5 @@ def write_to_cell(stdscr):
             settings.contents.append([])
         while len(settings.contents[settings.current_row_idx]) <= settings.current_col_idx:
             settings.contents[settings.current_row_idx].append('')
-        settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input
+        settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input.decode('utf-8')
         pad_data_with_commas()

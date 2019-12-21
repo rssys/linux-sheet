@@ -21,7 +21,7 @@ def big_commands(stdscr):
     stdscr.addstr(h-1,0,":")
     command = stdscr.getstr(h-1,1)
     curses.noecho()
-    if command == "wq":
+    if command.decode('utf-8') == "wq":
         settings.user_exited = True
         save_data()
     try:

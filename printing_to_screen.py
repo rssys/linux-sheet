@@ -14,7 +14,7 @@ def print_current_location(stdscr):
             stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
     else:
         if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]) and settings.contents[settings.current_row_idx][settings.current_col_idx] is not '':
-                stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + settings.contents[settings.current_row_idx][settings.current_col_idx])
+                stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx) + ' | ' + str(settings.contents[settings.current_row_idx][settings.current_col_idx]))
         else:
             stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx) + ' col: ' + str(settings.current_col_idx))
 

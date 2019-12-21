@@ -19,9 +19,9 @@ def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
     curses.echo()
     stdscr.addstr(h-1,0,":")
-    command = stdscr.getstr(h-1,1)
+    command = stdscr.getstr(h-1,1).decode('utf-8')
     curses.noecho()
-    if command.decode('utf-8') == "wq":
+    if command == "wq":
         settings.user_exited = True
         save_data()
     try:
@@ -68,7 +68,7 @@ def main(stdscr):
             navigating = True
         elif key == curses.KEY_RIGHT:
             settings.current_col_idx += 1
-            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + grid_w:
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + grid_w // settings.cell_w * settings.cell_w:
                 settings.w_holder += settings.cell_w
             navigating = True
         elif key == ord('h'):

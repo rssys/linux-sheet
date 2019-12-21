@@ -2,7 +2,6 @@ import csv
 import sys
 import curses
 import settings
-from grid_creation import create_without_grid_lines
 
 def navigate_help_menu():
     pass
@@ -40,4 +39,3 @@ def pop_up_help(stdscr):
             navigate_help_menu()
         elif key == 27: #escape key
             break
-    create_without_grid_lines(stdscr)

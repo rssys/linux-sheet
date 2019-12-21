@@ -3,30 +3,17 @@ import sys
 import curses
 import settings
 
-from data_management import read_CSV
+from data_management import read_data
 from data_management import save_data
+from data_management import index_contents
 from data_management import write_to_cell
 from grid_creation import create_without_grid_lines
 from grid_creation import create_with_grid_lines
 from dimensions import get_dimensions
 from help_menu import navigate_help_menu
 from help_menu import pop_up_help
-
-# def get_csv_string_format(user_input, row, col):
-#     return str(row) + "|" + str(col) + "|" + user_input
-
-def index_contents(stdscr):
-    for index, element in enumerate(settings.contents):
-        element_parts = str(element).split('|')
-        y = element_parts[0][2:] #we have to take from the second index because for some reason each element has the bracket and single quotes included
-        x = element_parts[1]
-        # stdscr.move(0,0)
-        # stdscr.addstr(str(y))
-        # break
-        settings.index_dict[y + x] = index
-
-def navigate_help_menu():
-    pass
+from features import quick_scroll
+from features import go_to
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -37,28 +24,19 @@ def big_commands(stdscr):
     if command == "wq":
         settings.user_exited = True
         save_data()
-
-# def write_to_cell(stdscr):
-#     curses.echo()
-#     # user_input = stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
-#     h, w = stdscr.getmaxyx()
-#     user_input = stdscr.getstr(h-1, 0)
-#     curses.noecho()
-#     if (str(settings.current_row_idx) + str(settings.current_col_idx)) in settings.index_dict:
-#         settings.contents[settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)]] = [get_csv_string_format(user_input, settings.current_row_idx, settings.current_col_idx)]
-#     else:
-#         settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)] = len(settings.contents)
-#         settings.contents.append([get_csv_string_format(user_input, settings.current_row_idx, settings.current_col_idx)])
-#     #TODO update the data
-#     stdscr.move(settings.current_row_idx + settings.top_margin - settings.h_holder, settings.current_col_idx * settings.cell_w + settings.dist_from_wall + settings.left_margin - settings.w_holder)
-#     # repaint the grid so the previous word is not still on screen
-#     create_without_grid_lines(stdscr)
-#     # print index_dict
+    try:
+        row_num = int(command)
+        go_to(row_num)
+    except ValueError:
+        pass
 
 def main(stdscr):
-    file_name = sys.argv[1]
-    settings.contents = read_CSV(stdscr, file_name)
-    index_contents(stdscr)
+    settings.file_name = sys.argv[1]
+    # set the format that the program will use (either normal CSV with commas or my own with coordinates)
+    # settings.format = "my_format"
+    settings.format = "CSV"
+    read_data(stdscr)
+    # index_contents(stdscr)
 
     # create color schemes for the top and bottom margins
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
@@ -85,7 +63,7 @@ def main(stdscr):
             navigating = True
         elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
             settings.current_col_idx -= 1
-            if settings.current_col_idx * settings.cell_w +settings.dist_from_wall <= settings.w_holder:
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
                 settings.w_holder -= settings.cell_w
             navigating = True
         elif key == curses.KEY_RIGHT:
@@ -95,10 +73,20 @@ def main(stdscr):
             navigating = True
         elif key == ord('h'):
             pop_up_help(stdscr)
+            # repaint the grid when exiting help menu
+            # create_without_grid_lines(stdscr)
         elif key == ord('i'):
             write_to_cell(stdscr)
             # repaint the grid to update the new word written to the screen
-            create_without_grid_lines(stdscr)
+            # create_without_grid_lines(stdscr)
+        elif key == ord('w'):
+            quick_scroll(stdscr, 'w')
+        elif key == ord('a'):
+            quick_scroll(stdscr, 'a')
+        elif key == ord('s'):
+            quick_scroll(stdscr, 's')
+        elif key == ord('d'):
+            quick_scroll(stdscr, 'd')
         elif key == ord(':'):
             big_commands(stdscr)
             # print user_exited
@@ -109,7 +97,8 @@ def main(stdscr):
                 settings.current_col_idx = settings.w_holder//settings.cell_w
                 stdscr.move(0, 0)
             # create_with_grid_lines(stdscr)
-            create_without_grid_lines(stdscr)
+            # create_without_grid_lines(stdscr)
+        create_without_grid_lines(stdscr)
 
 if __name__ == '__main__':
     curses.wrapper(main)

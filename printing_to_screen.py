@@ -4,6 +4,9 @@ import curses
 import settings
 
 def print_current_location(stdscr):
+    # clears line in case previous string was longer than current element
+    stdscr.move(0,0)
+    stdscr.clrtoeol()
     if settings.format == "my_format":
         if (str(settings.current_row_idx) + str(settings.current_col_idx)) in settings.index_dict:
             coords_and_user_input = str(settings.contents[settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)]])

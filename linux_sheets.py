@@ -50,27 +50,27 @@ def main(stdscr):
         # get dimensions to check for scrolling
         grid_h, grid_w = get_dimensions(stdscr)
         # user navigation
-        navigating = False
+        grid_shifting = False
         if key == curses.KEY_UP and settings.current_row_idx > 0:
             settings.current_row_idx -= 1
             if settings.current_row_idx < settings.h_holder:
                 settings.h_holder -= 1
-            navigating = True
+                grid_shifting = True
         elif key == curses.KEY_DOWN:
             settings.current_row_idx += 1
             if settings.current_row_idx >= settings.h_holder + grid_h:
                 settings.h_holder += 1
-            navigating = True
+                grid_shifting = True
         elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
             settings.current_col_idx -= 1
             if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
                 settings.w_holder -= settings.cell_w
-            navigating = True
+                grid_shifting = True
         elif key == curses.KEY_RIGHT:
             settings.current_col_idx += 1
-            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + grid_w // settings.cell_w * settings.cell_w:
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
                 settings.w_holder += settings.cell_w
-            navigating = True
+                grid_shifting = True
         elif key == ord('h'):
             pop_up_help(stdscr)
             # repaint the grid when exiting help menu
@@ -89,15 +89,15 @@ def main(stdscr):
             quick_scroll(stdscr, 'd')
         elif key == ord(':'):
             big_commands(stdscr)
-            # print user_exited
-        if navigating is True or key == curses.KEY_RESIZE:
-            # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
-            if key == curses.KEY_RESIZE:
-                settings.current_row_idx = settings.h_holder
-                settings.current_col_idx = settings.w_holder//settings.cell_w
-                stdscr.move(0, 0)
-            # create_with_grid_lines(stdscr)
-            # create_without_grid_lines(stdscr)
+        # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
+        if key == curses.KEY_RESIZE:
+            settings.current_row_idx = settings.h_holder
+            settings.current_col_idx = settings.w_holder//settings.cell_w
+            stdscr.move(0, 0)
+        # if not grid_shifting:
+        #     # stdscr.refresh()
+        #     stdscr.move((settings.current_row_idx + settings.top_margin), settings.dist_from_wall + settings.left_margin + (settings.current_col_idx * settings.cell_w))
+        # else:
         create_without_grid_lines(stdscr)
 
 if __name__ == '__main__':

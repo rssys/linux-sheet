@@ -7,6 +7,15 @@ format = ""
 contents = []
 # this dictionary is for my own format where each input has coordinates attached to it
 index_dict = {}
+# the grid object that will hold all the contents
+grid = None
+grid_shifting = False
+# height and width of the screen
+h = 0
+w = 0
+# grid height and width
+grid_h = 0
+grid_w = 0
 # placeholder variables for the top left corner so we can know when to scroll
 h_holder = 0
 w_holder = 0

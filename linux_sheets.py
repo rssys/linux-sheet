@@ -9,6 +9,7 @@ from data_management import index_contents
 from data_management import write_to_cell
 from grid_creation import create_without_grid_lines
 from grid_creation import create_with_grid_lines
+from grid_creation import refresh_grid
 from dimensions import get_dimensions
 from help_menu import navigate_help_menu
 from help_menu import pop_up_help
@@ -41,36 +42,37 @@ def main(stdscr):
     # create color schemes for the top and bottom margins
     curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-    # # initial drawing of grid
+    # get dimensions
+    settings.h, settings.w = stdscr.getmaxyx()
+    settings.grid_h, settings.grid_w = get_dimensions(stdscr)
+    # initial drawing of grid
     create_without_grid_lines(stdscr)
 
     while settings.user_exited == False:
         # read in user input
         key = stdscr.getch()
-        # get dimensions to check for scrolling
-        grid_h, grid_w = get_dimensions(stdscr)
         # user navigation
-        grid_shifting = False
+        settings.grid_shifting = False
         if key == curses.KEY_UP and settings.current_row_idx > 0:
             settings.current_row_idx -= 1
             if settings.current_row_idx < settings.h_holder:
                 settings.h_holder -= 1
-                grid_shifting = True
+                settings.grid_shifting = True
         elif key == curses.KEY_DOWN:
             settings.current_row_idx += 1
-            if settings.current_row_idx >= settings.h_holder + grid_h:
+            if settings.current_row_idx >= settings.h_holder + settings.grid_h:
                 settings.h_holder += 1
-                grid_shifting = True
+                settings.grid_shifting = True
         elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
             settings.current_col_idx -= 1
             if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
                 settings.w_holder -= settings.cell_w
-                grid_shifting = True
+                settings.grid_shifting = True
         elif key == curses.KEY_RIGHT:
             settings.current_col_idx += 1
-            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
                 settings.w_holder += settings.cell_w
-                grid_shifting = True
+                settings.grid_shifting = True
         elif key == ord('h'):
             pop_up_help(stdscr)
             # repaint the grid when exiting help menu
@@ -91,14 +93,17 @@ def main(stdscr):
             big_commands(stdscr)
         # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
         if key == curses.KEY_RESIZE:
+            # get dimensions again
+            settings.h, settings.w = stdscr.getmaxyx()
+            settings.grid_h, settings.grid_w = get_dimensions(stdscr)
             settings.current_row_idx = settings.h_holder
             settings.current_col_idx = settings.w_holder//settings.cell_w
             stdscr.move(0, 0)
-        # if not grid_shifting:
-        #     # stdscr.refresh()
-        #     stdscr.move((settings.current_row_idx + settings.top_margin), settings.dist_from_wall + settings.left_margin + (settings.current_col_idx * settings.cell_w))
-        # else:
-        create_without_grid_lines(stdscr)
+        if not settings.grid_shifting and key != curses.KEY_RESIZE:
+            # stdscr.refresh()
+            refresh_grid(stdscr)
+        else:
+            create_without_grid_lines(stdscr)
 
 if __name__ == '__main__':
     curses.wrapper(main)

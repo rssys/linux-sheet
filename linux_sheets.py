@@ -15,6 +15,8 @@ from help_menu import navigate_help_menu
 from help_menu import pop_up_help
 from features import quick_scroll
 from features import go_to
+from features import insert_row
+from features import insert_col
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -25,11 +27,36 @@ def big_commands(stdscr):
     if command == "wq":
         settings.user_exited = True
         save_data()
+    # handle commands in the form command:line number/coordinates.
+    # Examples:
+    # :goto:20 means go to row 20
+    # :goto:20,13 means go to row 20, column 13
+    # :ir:10 means insert 10 rows at current location
     try:
-        row_num = int(command)
-        go_to(row_num)
+        # separate the 2 parts of the command
+        command_parts = command.split(':')
+        command = command_parts[0]
+        # depending on the type of command, these variable may or may not be used, like if command is ir,
+        # row and col won't be used, but if the command is goto, they will because we need coordinates
+        row = 0
+        col = 0
+        num = 0
+        if ',' in command_parts[1]:
+            coordinates = command_parts[1].split(',')
+            row = coordinates[0]
+            col = coordinates[1]
+        else:
+            num = command_parts[1]
+        # handle each type of command
+        if command == "goto":
+            go_to(row, col)
+        elif command == "ir":
+            insert_row(num)
+        elif command == "ic":
+            insert_col(num)
     except ValueError:
         pass
+    stdscr.clrtoeol() # this is so the command string doesn't stay on screen
 
 def main(stdscr):
     settings.file_name = sys.argv[1]

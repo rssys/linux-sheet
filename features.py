@@ -5,7 +5,13 @@ import settings
 
 from dimensions import get_dimensions
 
-def go_to():
+def go_to(row, col):
+    pass
+
+def insert_row(num_rows):
+    pass
+
+def insert_col(num_cols):
     pass
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll

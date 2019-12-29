@@ -27,11 +27,16 @@ def insert_row(command_nums):
             row.append('')
         for a in range(0, num_rows):
             settings.contents.insert(settings.current_row_idx, row)
-    settings.grid_shifting = True
+        settings.grid_shifting = True
 
 def insert_col(command_nums):
     num_cols = int(command_nums)
-
+    # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
+    if settings.current_col_idx < len(settings.contents[0]):
+        for a in range(0, num_cols):
+            for row in settings.contents:
+                row.insert(settings.current_col_idx, '')
+        settings.grid_shifting = True
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):
     h, w = get_dimensions(stdscr)

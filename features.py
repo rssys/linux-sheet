@@ -6,7 +6,14 @@ import settings
 from dimensions import get_dimensions
 
 def go_to(row, col):
-    pass
+    if row >= 0 and col >= 0:
+        settings.current_row_idx = row
+        settings.h_holder = row
+        settings.current_col_idx = col
+        settings.w_holder = col * settings.cell_w
+        # determine if grid must be shifted
+        settings.grid_shifting = True
+
 
 def insert_row(num_rows):
     pass

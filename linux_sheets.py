@@ -43,8 +43,8 @@ def big_commands(stdscr):
         num = 0
         if ',' in command_parts[1]:
             coordinates = command_parts[1].split(',')
-            row = coordinates[0]
-            col = coordinates[1]
+            row = int(coordinates[0])
+            col = int(coordinates[1])
         else:
             num = command_parts[1]
         # handle each type of command
@@ -57,6 +57,7 @@ def big_commands(stdscr):
     except ValueError:
         pass
     stdscr.clrtoeol() # this is so the command string doesn't stay on screen
+    # stdscr.addstr(h-1,0,str(row) + str(col))
 
 def main(stdscr):
     settings.file_name = sys.argv[1]

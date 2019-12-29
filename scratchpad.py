@@ -25,7 +25,7 @@ def main(stdscr):
         x =len(element)
         for y in range(x, max_len):
             contents[index].append('')
-            print(y, max_len)
+            # print(y, max_len)
     # print int("['4")
     print(contents)
     # for row in contents:

@@ -36,24 +36,14 @@ def big_commands(stdscr):
         # separate the 2 parts of the command
         command_parts = command.split(':')
         command = command_parts[0]
-        # depending on the type of command, these variable may or may not be used, like if command is ir,
-        # row and col won't be used, but if the command is goto, they will because we need coordinates
-        row = 0
-        col = 0
-        num = 0
-        if ',' in command_parts[1]:
-            coordinates = command_parts[1].split(',')
-            row = int(coordinates[0])
-            col = int(coordinates[1])
-        else:
-            num = command_parts[1]
+        command_nums = command_parts[1]
         # handle each type of command
         if command == "goto":
-            go_to(row, col)
+            go_to(command_nums)
         elif command == "ir":
-            insert_row(num)
+            insert_row(command_nums)
         elif command == "ic":
-            insert_col(num)
+            insert_col(command_nums)
     except ValueError:
         pass
     stdscr.clrtoeol() # this is so the command string doesn't stay on screen

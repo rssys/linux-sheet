@@ -65,3 +65,5 @@ def write_to_cell(stdscr):
             settings.contents[settings.current_row_idx].append('')
         settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input.decode('utf-8')
         pad_data_with_commas()
+    stdscr.clrtoeol()
+    settings.grid_shifting = True

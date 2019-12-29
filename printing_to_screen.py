@@ -23,8 +23,8 @@ def print_current_location(stdscr):
 
 def print_data():
     # print data
-    # TODO instead of looping through all the data, loop through every spot on screen and check if there is an element there
     if settings.format == "my_format":
+        # TODO instead of looping through all the data, loop through every spot on screen and check if there is an element there
         for row in settings.contents:
             for element in row:
                 element_parts = str(element).split('|')

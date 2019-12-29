@@ -5,7 +5,10 @@ import settings
 
 from dimensions import get_dimensions
 
-def go_to(row, col):
+def go_to(command_nums):
+    coordinates = command_nums.split(',')
+    row = int(coordinates[0])
+    col = int(coordinates[1])
     if row >= 0 and col >= 0:
         settings.current_row_idx = row
         settings.h_holder = row
@@ -14,12 +17,20 @@ def go_to(row, col):
         # determine if grid must be shifted
         settings.grid_shifting = True
 
+def insert_row(command_nums):
+    num_rows = int(command_nums)
+    # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
+    if settings.current_row_idx < len(settings.contents):
+        row_len = len(settings.contents[0])
+        row = []
+        for comma in range(0, row_len):
+            row.append('')
+        for a in range(0, num_rows):
+            settings.contents.insert(settings.current_row_idx, row)
+    settings.grid_shifting = True
 
-def insert_row(num_rows):
-    pass
-
-def insert_col(num_cols):
-    pass
+def insert_col(command_nums):
+    num_cols = int(command_nums)
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):

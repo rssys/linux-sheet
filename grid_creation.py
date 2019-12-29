@@ -19,6 +19,7 @@ def create_without_grid_lines(stdscr):
 
 def refresh_grid(stdscr):
     print_current_location(stdscr)
+
     print_data()
 
     print_col_letters(stdscr)

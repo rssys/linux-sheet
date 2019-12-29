@@ -15,8 +15,10 @@ from help_menu import navigate_help_menu
 from help_menu import pop_up_help
 from features import quick_scroll
 from features import go_to
-from features import insert_row
-from features import insert_col
+from features import insert_rows
+from features import insert_cols
+from features import delete_rows
+from features import delete_cols
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -41,9 +43,9 @@ def big_commands(stdscr):
         if command == "goto":
             go_to(command_nums)
         elif command == "ir":
-            insert_row(command_nums)
+            insert_rows(command_nums)
         elif command == "ic":
-            insert_col(command_nums)
+            insert_cols(command_nums)
     except ValueError:
         pass
     stdscr.clrtoeol() # this is so the command string doesn't stay on screen

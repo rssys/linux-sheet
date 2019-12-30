@@ -71,7 +71,19 @@ def delete_rows(command_nums):
         pass
 
 def delete_cols(command_nums):
-    pass
+    try:
+        num_cols = int(command_nums)
+        # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
+        total_cols = len(settings.contents[0])
+        if settings.current_col_idx < total_cols:
+            if settings.current_col_idx + num_cols > total_cols:
+                num_cols = total_cols - settings.current_col_idx
+            for a in range(0, num_cols):
+                for row in settings.contents:
+                    del(row[settings.current_col_idx])
+            settings.grid_shifting = True
+    except ValueError:
+        pass
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):

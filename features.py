@@ -17,30 +17,59 @@ def go_to(command_nums):
         # determine if grid must be shifted
         settings.grid_shifting = True
 
+def insert_row(command_nums):
+    insert_rows(command_nums)
+
+def insert_col(command_nums):
+    insert_cols(command_nums)
+
 def insert_rows(command_nums):
-    num_rows = int(command_nums)
-    # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
-    if settings.current_row_idx < len(settings.contents):
-        row_len = len(settings.contents[0])
-        row = []
-        for comma in range(0, row_len):
-            row.append('')
-        for a in range(0, num_rows):
-            settings.contents.insert(settings.current_row_idx, row)
-        settings.grid_shifting = True
+    try:
+        num_rows = int(command_nums)
+        # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
+        if settings.current_row_idx < len(settings.contents):
+            row_len = len(settings.contents[0])
+            row = []
+            for comma in range(0, row_len):
+                row.append('')
+            for a in range(0, num_rows):
+                settings.contents.insert(settings.current_row_idx, row)
+            settings.grid_shifting = True
+    except ValueError:
+        pass
 
 def insert_cols(command_nums):
-    num_cols = int(command_nums)
-    # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
-    if settings.current_col_idx < len(settings.contents[0]):
-        for a in range(0, num_cols):
-            for row in settings.contents:
-                row.insert(settings.current_col_idx, '')
-        settings.grid_shifting = True
+    try:
+        num_cols = int(command_nums)
+        # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
+        if settings.current_col_idx < len(settings.contents[0]):
+            for a in range(0, num_cols):
+                for row in settings.contents:
+                    row.insert(settings.current_col_idx, '')
+            settings.grid_shifting = True
+    except ValueError:
+        pass
+
+def delete_row(command_nums):
+    delete_rows(command_nums)
+
+def delete_col(command_nums):
+    delete_cols(command_nums)
 
 def delete_rows(command_nums):
-    pass
-    
+    try:
+        num_rows = int(command_nums)
+        # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
+        total_rows = len(settings.contents)
+        if settings.current_row_idx < total_rows:
+            if settings.current_row_idx + num_rows > total_rows:
+                num_rows = total_rows - settings.current_row_idx
+            for a in range(0,num_rows):
+                del(settings.contents[settings.current_row_idx])
+            settings.grid_shifting = True
+    except ValueError:
+        pass
+
 def delete_cols(command_nums):
     pass
 

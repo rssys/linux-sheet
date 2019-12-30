@@ -17,8 +17,12 @@ from features import quick_scroll
 from features import go_to
 from features import insert_rows
 from features import insert_cols
+from features import insert_row
+from features import insert_col
 from features import delete_rows
 from features import delete_cols
+from features import delete_row
+from features import delete_col
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -29,25 +33,38 @@ def big_commands(stdscr):
     if command == "wq":
         settings.user_exited = True
         save_data()
-    # handle commands in the form command:line number/coordinates.
-    # Examples:
-    # :goto:20 means go to row 20
-    # :goto:20,13 means go to row 20, column 13
-    # :ir:10 means insert 10 rows at current location
-    try:
-        # separate the 2 parts of the command
-        command_parts = command.split(':')
-        command = command_parts[0]
-        command_nums = command_parts[1]
-        # handle each type of command
-        if command == "goto":
-            go_to(command_nums)
-        elif command == "ir":
-            insert_rows(command_nums)
-        elif command == "ic":
-            insert_cols(command_nums)
-    except ValueError:
-        pass
+    elif command == "ir":
+        insert_row("1")
+    elif command == "ic":
+        insert_col("1")
+    elif command == "dr":
+        delete_row("1")
+    elif command == "dc":
+        delete_col("1")
+    else:
+        # handle commands in the form command:line number/coordinates.
+        # Examples:
+        # :goto:20 means go to row 20
+        # :goto:20,13 means go to row 20, column 13
+        # :ir:10 means insert 10 rows at current location
+        try:
+            # separate the 2 parts of the command
+            command_parts = command.split(':')
+            command = command_parts[0]
+            command_nums = command_parts[1]
+            # handle each type of command
+            if command == "goto":
+                go_to(command_nums)
+            elif command == "ir":
+                insert_rows(command_nums)
+            elif command == "ic":
+                insert_cols(command_nums)
+            elif command == "dr":
+                delete_rows(command_nums)
+            elif command == "dc":
+                delete_cols(command_nums)
+        except ValueError:
+            pass
     stdscr.clrtoeol() # this is so the command string doesn't stay on screen
     # stdscr.addstr(h-1,0,str(row) + str(col))
 

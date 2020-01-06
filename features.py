@@ -85,6 +85,9 @@ def delete_cols(command_nums):
     except ValueError:
         pass
 
+def highlight(stdscr):
+    pass
+
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):
     h, w = get_dimensions(stdscr)

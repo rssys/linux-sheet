@@ -14,8 +14,6 @@ def pop_up_help(stdscr):
     manual.addstr(1,1,"this is the help menu")
     manual.addstr(2,1,"Navigation: Arrow keys")
     manual.addstr(3,1,"To input data: 'i', enter data")
-    manual.addstr(3,1,"To input data: 'i', enter data")
-    # manual.refresh(0,0,0,0,h,w)
     manual.refresh()
     exit_menu = False
     manual_y = 0

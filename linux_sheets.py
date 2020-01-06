@@ -23,6 +23,7 @@ from features import delete_rows
 from features import delete_cols
 from features import delete_row
 from features import delete_col
+from features import highlight
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -84,7 +85,6 @@ def main(stdscr):
     settings.grid_h, settings.grid_w = get_dimensions(stdscr)
     # initial drawing of grid
     create_without_grid_lines(stdscr)
-
     while settings.user_exited == False:
         # read in user input
         key = stdscr.getch()
@@ -116,8 +116,8 @@ def main(stdscr):
             # create_without_grid_lines(stdscr)
         elif key == ord('i'):
             write_to_cell(stdscr)
-            # repaint the grid to update the new word written to the screen
-            # create_without_grid_lines(stdscr)
+        elif key == ord('v'):
+            highlight(stdscr)
         elif key == ord('w'):
             quick_scroll(stdscr, 'w')
         elif key == ord('a'):
@@ -141,6 +141,7 @@ def main(stdscr):
             refresh_grid(stdscr)
         else:
             create_without_grid_lines(stdscr)
+
 
 if __name__ == '__main__':
     curses.wrapper(main)

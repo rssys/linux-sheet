@@ -41,3 +41,14 @@ current_display_w = 0
 # TODO use these, right now I am just scrolling by the screen height and width
 h_q_scroll = 0
 w_q_scroll = 0
+# boolean for whether or not visual mode is active (for highlighting, copy/paste)
+visual_mode = False
+# coordinates for where the user entered visual mode
+highlight_start_x = 0
+highlight_start_y = 0
+# coordinates for where the user exited visual mode
+highlight_end_x = 0
+highlight_end_y = 0
+# to get rid of excess highlighting, we need to keep track of the previous coordinates
+highlight_prev_x = 0
+highlight_prev_y = 0

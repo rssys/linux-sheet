@@ -85,8 +85,27 @@ def delete_cols(command_nums):
     except ValueError:
         pass
 
-def highlight(stdscr):
-    pass
+def highlight():
+    # get smaller x and y values
+    start_x = min(settings.current_col_idx, settings.highlight_start_x)
+    start_y = min(settings.current_row_idx, settings.highlight_start_y)
+    # get number of rows and cols to highlight
+    cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1
+    rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1
+    # settings.grid.addstr(20,20,"x:"+str(settings.highlight_prev_x) + " y:"+ str(settings.highlight_prev_y))
+    # get ending coordinates
+    end_x = start_x + cols_to_highlight
+    end_y = start_y + rows_to_highlight
+    for row in range(start_y, end_y):
+        for col in range(start_x, end_x):
+            settings.grid.chgat(row, col * settings.cell_w, settings.cell_w, curses.A_REVERSE)
+    # get rid of excess highlighting if necessary
+    if settings.highlight_prev_x < start_x or settings.highlight_prev_x >= end_x:
+        for row in range(start_y, end_y):
+            settings.grid.chgat(row, settings.highlight_prev_x * settings.cell_w, settings.cell_w, curses.A_NORMAL)
+    elif settings.highlight_prev_y < start_y or settings.highlight_prev_y >= end_y:
+        for col in range(start_x, end_x):
+            settings.grid.chgat(settings.highlight_prev_y, col * settings.cell_w, settings.cell_w, curses.A_NORMAL)
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):

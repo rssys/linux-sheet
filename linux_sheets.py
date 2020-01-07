@@ -110,14 +110,13 @@ def main(stdscr):
             if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
                 settings.w_holder += settings.cell_w
                 settings.grid_shifting = True
-        elif key == ord('h'):
-            pop_up_help(stdscr)
-            # repaint the grid when exiting help menu
-            # create_without_grid_lines(stdscr)
-        elif key == ord('i'):
-            write_to_cell(stdscr)
         elif key == ord('v'):
-            highlight(stdscr)
+            settings.visual_mode = not settings.visual_mode
+            if settings.visual_mode:
+                settings.highlight_start_x = settings.current_col_idx
+                settings.highlight_start_y = settings.current_row_idx
+                settings.highlight_prev_x = settings.current_col_idx
+                settings.highlight_prev_y = settings.current_row_idx
         elif key == ord('w'):
             quick_scroll(stdscr, 'w')
         elif key == ord('a'):
@@ -128,6 +127,18 @@ def main(stdscr):
             quick_scroll(stdscr, 'd')
         elif key == ord(':'):
             big_commands(stdscr)
+        # commands that will only execute if not in visual_mode
+        if settings.visual_mode:
+            highlight()
+            settings.highlight_prev_x = settings.current_col_idx
+            settings.highlight_prev_y = settings.current_row_idx
+        else:
+            if key == ord('h'):
+                pop_up_help(stdscr)
+                # repaint the grid when exiting help menu
+                # create_without_grid_lines(stdscr)
+            elif key == ord('i'):
+                write_to_cell(stdscr)
         # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
         if key == curses.KEY_RESIZE:
             # get dimensions again
@@ -136,12 +147,13 @@ def main(stdscr):
             settings.current_row_idx = settings.h_holder
             settings.current_col_idx = settings.w_holder//settings.cell_w
             stdscr.move(0, 0)
+            # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
         if not settings.grid_shifting and key != curses.KEY_RESIZE:
             # stdscr.refresh()
             refresh_grid(stdscr)
         else:
             create_without_grid_lines(stdscr)
-
+            # TODO we might have to rehighlight everything
 
 if __name__ == '__main__':
     curses.wrapper(main)

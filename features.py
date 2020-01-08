@@ -90,9 +90,10 @@ def highlight():
     start_x = min(settings.current_col_idx, settings.highlight_start_x)
     start_y = min(settings.current_row_idx, settings.highlight_start_y)
     # get number of rows and cols to highlight
-    cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1
-    rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1
-    # settings.grid.addstr(20,20,"x:"+str(settings.highlight_prev_x) + " y:"+ str(settings.highlight_prev_y))
+    cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
+    rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    # settings.grid.addstr(21,20,"end_x:"+str(settings.current_col_idx) + " end_y:"+ str(settings.current_row_idx))
+    # settings.grid.addstr(20,20,"start_x:"+str(settings.highlight_start_x) + " start_y:"+ str(settings.highlight_start_y))
     # get ending coordinates
     end_x = start_x + cols_to_highlight
     end_y = start_y + rows_to_highlight

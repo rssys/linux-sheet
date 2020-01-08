@@ -69,6 +69,92 @@ def big_commands(stdscr):
     stdscr.clrtoeol() # this is so the command string doesn't stay on screen
     # stdscr.addstr(h-1,0,str(row) + str(col))
 
+def handle_basic_navigation(key):
+    if key == curses.KEY_UP and settings.current_row_idx > 0:
+        settings.current_row_idx -= 1
+        if settings.current_row_idx < settings.h_holder:
+            settings.h_holder -= 1
+            settings.grid_shifting = True
+    elif key == curses.KEY_DOWN:
+        settings.current_row_idx += 1
+        if settings.current_row_idx >= settings.h_holder + settings.grid_h:
+            settings.h_holder += 1
+            settings.grid_shifting = True
+    elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
+        settings.current_col_idx -= 1
+        if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
+            settings.w_holder -= settings.cell_w
+            settings.grid_shifting = True
+    elif key == curses.KEY_RIGHT:
+        settings.current_col_idx += 1
+        if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
+            settings.w_holder += settings.cell_w
+            settings.grid_shifting = True
+
+def handle_virtual_mode(stdscr,key):
+    if key == ord('v'):
+        settings.visual_mode = not settings.visual_mode
+        if settings.visual_mode:
+            settings.highlight_start_x = settings.current_col_idx
+            settings.highlight_start_y = settings.current_row_idx
+            settings.highlight_prev_x = settings.current_col_idx
+            settings.highlight_prev_y = settings.current_row_idx
+        else:
+            # this is to remove the highlighting
+            create_without_grid_lines(stdscr)
+
+def handle_features(stdscr,key):
+    if key == ord('w'):
+        quick_scroll(stdscr, 'w')
+    elif key == ord('a'):
+        quick_scroll(stdscr, 'a')
+    elif key == ord('s'):
+        quick_scroll(stdscr, 's')
+    elif key == ord('d'):
+        quick_scroll(stdscr, 'd')
+
+def handle_big_commands(stdscr, key):
+        if key == ord(':'):
+            big_commands(stdscr)
+
+def handle_resize(stdscr,key):
+    # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
+    if key == curses.KEY_RESIZE:
+        # get dimensions again
+        settings.h, settings.w = stdscr.getmaxyx()
+        settings.grid_h, settings.grid_w = get_dimensions(stdscr)
+        settings.current_row_idx = settings.h_holder
+        settings.current_col_idx = settings.w_holder//settings.cell_w
+        stdscr.move(0, 0)
+        # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
+        settings.visual_mode = False
+
+def handle_grid_update(stdscr, key):
+    if not settings.grid_shifting and key != curses.KEY_RESIZE:
+        # stdscr.refresh()
+        if settings.visual_mode:
+            highlight()
+            settings.highlight_prev_x = settings.current_col_idx
+            settings.highlight_prev_y = settings.current_row_idx
+        refresh_grid(stdscr)
+    else:
+        create_without_grid_lines(stdscr)
+        # settings.grid.addstr(20,20,"created GRID")
+        if settings.visual_mode:
+            highlight()
+            settings.highlight_prev_x = settings.current_col_idx
+            settings.highlight_prev_y = settings.current_row_idx
+            refresh_grid(stdscr)
+        # TODO we might have to rehighlight everything
+
+def handle_help_menu(stdscr, key):
+    if key == ord('h'):
+        pop_up_help(stdscr)
+
+def handle_inserting(stdscr, key):
+    if key == ord('i'):
+        write_to_cell(stdscr)
+
 def main(stdscr):
     settings.file_name = sys.argv[1]
     # set the format that the program will use (either normal CSV with commas or my own with coordinates)
@@ -88,72 +174,17 @@ def main(stdscr):
     while settings.user_exited == False:
         # read in user input
         key = stdscr.getch()
-        # user navigation
+        # always reset grid_shifting to false
         settings.grid_shifting = False
-        if key == curses.KEY_UP and settings.current_row_idx > 0:
-            settings.current_row_idx -= 1
-            if settings.current_row_idx < settings.h_holder:
-                settings.h_holder -= 1
-                settings.grid_shifting = True
-        elif key == curses.KEY_DOWN:
-            settings.current_row_idx += 1
-            if settings.current_row_idx >= settings.h_holder + settings.grid_h:
-                settings.h_holder += 1
-                settings.grid_shifting = True
-        elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
-            settings.current_col_idx -= 1
-            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
-                settings.w_holder -= settings.cell_w
-                settings.grid_shifting = True
-        elif key == curses.KEY_RIGHT:
-            settings.current_col_idx += 1
-            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
-                settings.w_holder += settings.cell_w
-                settings.grid_shifting = True
-        elif key == ord('v'):
-            settings.visual_mode = not settings.visual_mode
-            if settings.visual_mode:
-                settings.highlight_start_x = settings.current_col_idx
-                settings.highlight_start_y = settings.current_row_idx
-                settings.highlight_prev_x = settings.current_col_idx
-                settings.highlight_prev_y = settings.current_row_idx
-        elif key == ord('w'):
-            quick_scroll(stdscr, 'w')
-        elif key == ord('a'):
-            quick_scroll(stdscr, 'a')
-        elif key == ord('s'):
-            quick_scroll(stdscr, 's')
-        elif key == ord('d'):
-            quick_scroll(stdscr, 'd')
-        elif key == ord(':'):
-            big_commands(stdscr)
-        # commands that will only execute if not in visual_mode
-        if settings.visual_mode:
-            highlight()
-            settings.highlight_prev_x = settings.current_col_idx
-            settings.highlight_prev_y = settings.current_row_idx
-        else:
-            if key == ord('h'):
-                pop_up_help(stdscr)
-                # repaint the grid when exiting help menu
-                # create_without_grid_lines(stdscr)
-            elif key == ord('i'):
-                write_to_cell(stdscr)
-        # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen
-        if key == curses.KEY_RESIZE:
-            # get dimensions again
-            settings.h, settings.w = stdscr.getmaxyx()
-            settings.grid_h, settings.grid_w = get_dimensions(stdscr)
-            settings.current_row_idx = settings.h_holder
-            settings.current_col_idx = settings.w_holder//settings.cell_w
-            stdscr.move(0, 0)
-            # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
-        if not settings.grid_shifting and key != curses.KEY_RESIZE:
-            # stdscr.refresh()
-            refresh_grid(stdscr)
-        else:
-            create_without_grid_lines(stdscr)
-            # TODO we might have to rehighlight everything
+        handle_virtual_mode(stdscr,key)
+        handle_basic_navigation(key)
+        handle_resize(stdscr,key)
+        if not settings.visual_mode:
+            handle_help_menu(stdscr,key)
+            handle_inserting(stdscr,key)
+            handle_features(stdscr,key)
+        handle_big_commands(stdscr, key)
+        handle_grid_update(stdscr,key)
 
 if __name__ == '__main__':
     curses.wrapper(main)

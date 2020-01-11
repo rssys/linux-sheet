@@ -20,6 +20,9 @@ grid_w = 0
 # placeholder variables for the top left corner so we can know when to scroll
 h_holder = 0
 w_holder = 0
+# keep track of the biggest the window has gotten so we only recreate the grid if it gets bigger
+biggest_h = 0
+biggest_w = 0
 # keep track of where user is
 current_row_idx = 0
 current_col_idx = 0

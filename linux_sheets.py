@@ -127,7 +127,9 @@ def handle_resize(stdscr,key):
         settings.current_col_idx = settings.w_holder//settings.cell_w
         stdscr.move(0, 0)
         # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
-        settings.visual_mode = False
+        if settings.visual_mode:
+            settings.visual_mode = False
+            create_without_grid_lines(stdscr)
 
 def handle_grid_update(stdscr, key):
     # if not settings.grid_shifting and key != curses.KEY_RESIZE:

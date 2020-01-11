@@ -35,6 +35,7 @@ def insert_rows(command_nums):
             for a in range(0, num_rows):
                 settings.contents.insert(settings.current_row_idx, row)
             settings.grid_shifting = True
+            settings.grid.erase()
     except ValueError:
         pass
 
@@ -47,6 +48,7 @@ def insert_cols(command_nums):
                 for row in settings.contents:
                     row.insert(settings.current_col_idx, '')
             settings.grid_shifting = True
+            settings.grid.erase()
     except ValueError:
         pass
 

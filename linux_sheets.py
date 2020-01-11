@@ -130,22 +130,22 @@ def handle_resize(stdscr,key):
         settings.visual_mode = False
 
 def handle_grid_update(stdscr, key):
-    if not settings.grid_shifting and key != curses.KEY_RESIZE:
+    # if not settings.grid_shifting and key != curses.KEY_RESIZE:
         # stdscr.refresh()
-        if settings.visual_mode:
-            highlight()
-            settings.highlight_prev_x = settings.current_col_idx
-            settings.highlight_prev_y = settings.current_row_idx
-        refresh_grid(stdscr)
-    else:
-        create_without_grid_lines(stdscr)
-        # settings.grid.addstr(20,20,"created GRID")
-        if settings.visual_mode:
-            highlight()
-            settings.highlight_prev_x = settings.current_col_idx
-            settings.highlight_prev_y = settings.current_row_idx
-            refresh_grid(stdscr)
-        # TODO we might have to rehighlight everything
+    if settings.visual_mode:
+        highlight()
+        settings.highlight_prev_x = settings.current_col_idx
+        settings.highlight_prev_y = settings.current_row_idx
+    refresh_grid(stdscr)
+    # else:
+    #     create_without_grid_lines(stdscr)
+    #     # settings.grid.addstr(20,20,"created GRID")
+    #     if settings.visual_mode:
+    #         highlight()
+    #         settings.highlight_prev_x = settings.current_col_idx
+    #         settings.highlight_prev_y = settings.current_row_idx
+    #         refresh_grid(stdscr)
+    #     # TODO we might have to rehighlight everything
 
 def handle_help_menu(stdscr, key):
     if key == ord('h'):

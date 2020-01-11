@@ -14,11 +14,11 @@ def create_without_grid_lines(stdscr):
     stdscr.erase()
 
     # create the grid
-    # settings.grid = curses.newpad(1000,1000)
-    if settings.grid_h + settings.h_holder > settings.biggest_h or settings.grid_w + settings.w_holder > settings.biggest_w:
-        settings.grid = curses.newpad(settings.grid_h + settings.h_holder, settings.grid_w + settings.w_holder)
-        settings.biggest_h = settings.grid_h + settings.h_holder
-        settings.biggest_w = settings.grid_w + settings.w_holder
+    settings.grid = curses.newpad(1000,1000)
+    # if settings.grid_h + settings.h_holder > settings.biggest_h or settings.grid_w + settings.w_holder > settings.biggest_w:
+    #     settings.grid = curses.newpad(settings.grid_h + settings.h_holder, settings.grid_w + settings.w_holder)
+    #     settings.biggest_h = settings.grid_h + settings.h_holder
+    #     settings.biggest_w = settings.grid_w + settings.w_holder
     # settings.grid.addstr(20,settings.current_col_idx*settings.cell_w,str(settings.biggest_w))
     refresh_grid(stdscr)
 

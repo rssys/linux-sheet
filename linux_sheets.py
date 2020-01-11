@@ -74,22 +74,22 @@ def handle_basic_navigation(key):
         settings.current_row_idx -= 1
         if settings.current_row_idx < settings.h_holder:
             settings.h_holder -= 1
-            settings.grid_shifting = True
+            # settings.grid_shifting = True
     elif key == curses.KEY_DOWN:
         settings.current_row_idx += 1
         if settings.current_row_idx >= settings.h_holder + settings.grid_h:
             settings.h_holder += 1
-            settings.grid_shifting = True
+            # settings.grid_shifting = True
     elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
         settings.current_col_idx -= 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
             settings.w_holder -= settings.cell_w
-            settings.grid_shifting = True
+            # settings.grid_shifting = True
     elif key == curses.KEY_RIGHT:
         settings.current_col_idx += 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
             settings.w_holder += settings.cell_w
-            settings.grid_shifting = True
+            # settings.grid_shifting = True
 
 def handle_virtual_mode(stdscr,key):
     if key == ord('v'):
@@ -177,7 +177,7 @@ def main(stdscr):
         # read in user input
         key = stdscr.getch()
         # always reset grid_shifting to false
-        settings.grid_shifting = False
+        # settings.grid_shifting = False
         handle_virtual_mode(stdscr,key)
         handle_basic_navigation(key)
         handle_resize(stdscr,key)

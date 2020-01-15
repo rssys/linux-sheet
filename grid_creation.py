@@ -24,16 +24,16 @@ def create_without_grid_lines(stdscr):
 
 def refresh_grid(stdscr):
     print_current_location(stdscr)
-
     print_data()
-
     print_col_letters(stdscr)
     print_row_numbers(stdscr)
     stdscr.refresh()
     # refresh pad depending on where user is and move cursor
     settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
-    settings.grid.refresh(settings.h_holder, settings.w_holder, settings.top_margin, settings.left_margin, settings.h-settings.bottom_margin, settings.w-1)
-
+    try:
+        settings.grid.refresh(settings.h_holder, settings.w_holder, settings.top_margin, settings.left_margin, settings.h-settings.bottom_margin, settings.w-1)
+    except curses.error:
+        print(str(settings.h_holder))
 
 # This method is outdated and if I do decide to add grid lines it will need to be update
 def create_with_grid_lines(stdscr):

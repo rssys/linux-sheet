@@ -125,7 +125,14 @@ def handle_resize(stdscr,key):
         settings.grid_h, settings.grid_w = get_dimensions(stdscr)
         settings.current_row_idx = settings.h_holder
         settings.current_col_idx = settings.w_holder//settings.cell_w
-        stdscr.move(0, 0)
+        # clear extra letters in letter row at top of screen
+        stdscr.move(2,0)
+        stdscr.clrtoeol()
+        # clear extra row at bottom if user made window smaller
+        stdscr.move(settings.h-1,0)
+        stdscr.clrtoeol()
+
+        # stdscr.move(0, 0)
         # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
         if settings.visual_mode:
             settings.visual_mode = False

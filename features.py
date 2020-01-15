@@ -87,13 +87,23 @@ def delete_cols(command_nums):
     except ValueError:
         pass
 
-def highlight():
+def get_highlight_coordinates():
     # get smaller x and y values
     start_x = min(settings.current_col_idx, settings.highlight_start_x)
     start_y = min(settings.current_row_idx, settings.highlight_start_y)
     # get number of rows and cols to highlight
     cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
     rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    return start_x, start_y, cols_to_highlight, rows_to_highlight
+
+def highlight():
+    # # get smaller x and y values
+    # start_x = min(settings.current_col_idx, settings.highlight_start_x)
+    # start_y = min(settings.current_row_idx, settings.highlight_start_y)
+    # # get number of rows and cols to highlight
+    # cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
+    # rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    start_x, start_y, cols_to_highlight, rows_to_highlight = get_highlight_coordinates()
     # settings.grid.addstr(21,20,"end_x:"+str(settings.current_col_idx) + " end_y:"+ str(settings.current_row_idx))
     # settings.grid.addstr(20,20,"start_x:"+str(settings.highlight_start_x) + " start_y:"+ str(settings.highlight_start_y))
     # get ending coordinates
@@ -111,10 +121,11 @@ def highlight():
             settings.grid.chgat(settings.highlight_prev_y, col * settings.cell_w, settings.cell_w, curses.A_NORMAL)
 
 def copy():
-    start_x = min(settings.current_col_idx, settings.highlight_start_x)
-    start_y = min(settings.current_row_idx, settings.highlight_start_y)
-    cols = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
-    rows = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    # start_x = min(settings.current_col_idx, settings.highlight_start_x)
+    # start_y = min(settings.current_row_idx, settings.highlight_start_y)
+    # cols = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
+    # rows = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    start_x, start_y, cols, rows = get_highlight_coordinates()
     settings.highlight_data = []
     # set up the 2d list
     for a in range(0,rows):
@@ -125,6 +136,7 @@ def copy():
     settings.grid.move(21,0)
     settings.grid.clrtoeol()
     settings.grid.addstr(21,20,str(settings.highlight_data))
+
 def paste():
     pass
 

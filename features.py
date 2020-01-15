@@ -110,6 +110,24 @@ def highlight():
         for col in range(start_x, end_x):
             settings.grid.chgat(settings.highlight_prev_y, col * settings.cell_w, settings.cell_w, curses.A_NORMAL)
 
+def copy():
+    start_x = min(settings.current_col_idx, settings.highlight_start_x)
+    start_y = min(settings.current_row_idx, settings.highlight_start_y)
+    cols = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
+    rows = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
+    settings.highlight_data = []
+    # set up the 2d list
+    for a in range(0,rows):
+        settings.highlight_data.append([])
+    for y in range(0, rows):
+        for x in range(0,cols):
+            settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
+    settings.grid.move(21,0)
+    settings.grid.clrtoeol()
+    settings.grid.addstr(21,20,str(settings.highlight_data))
+def paste():
+    pass
+
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):
     h, w = get_dimensions(stdscr)

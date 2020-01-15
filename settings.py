@@ -55,3 +55,5 @@ highlight_end_y = 0
 # to get rid of excess highlighting, we need to keep track of the previous coordinates
 highlight_prev_x = 0
 highlight_prev_y = 0
+# this 2d list is for storing the data that the user highlights
+highlight_data = []

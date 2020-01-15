@@ -24,6 +24,7 @@ from features import delete_cols
 from features import delete_row
 from features import delete_col
 from features import highlight
+from features import copy
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -102,6 +103,8 @@ def handle_virtual_mode(stdscr,key):
         else:
             # this is to remove the highlighting
             create_without_grid_lines(stdscr)
+    elif key == ord('y') and settings.visual_mode:
+        copy()
 
 def handle_features(stdscr,key):
     if key == ord('w'):

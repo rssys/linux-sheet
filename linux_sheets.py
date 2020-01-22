@@ -25,6 +25,7 @@ from features import delete_row
 from features import delete_col
 from features import highlight
 from features import copy
+from features import delete_cell
 
 def big_commands(stdscr):
     h, w = stdscr.getmaxyx()
@@ -112,6 +113,8 @@ def handle_features(stdscr,key):
         quick_scroll(stdscr, 's')
     elif key == ord('d'):
         quick_scroll(stdscr, 'd')
+    elif key == ord('r'):
+        delete_cell();
 
 def handle_big_commands(stdscr, key):
         if key == ord(':'):

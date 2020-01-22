@@ -5,6 +5,12 @@ import settings
 
 from dimensions import get_dimensions
 
+def delete_cell():
+    if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]):
+        settings.contents[settings.current_row_idx][settings.current_col_idx] = '';
+        settings.grid.move(settings.current_row_idx, 0);
+        settings.grid.clrtoeol();
+
 def go_to(command_nums):
     coordinates = command_nums.split(',')
     row = int(coordinates[0])

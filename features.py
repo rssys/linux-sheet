@@ -15,7 +15,6 @@ def go_to(command_nums):
         settings.current_col_idx = col
         settings.w_holder = col * settings.cell_w
         # determine if grid must be shifted
-        settings.grid_shifting = True
 
 def insert_row(command_nums):
     insert_rows(command_nums)
@@ -34,7 +33,6 @@ def insert_rows(command_nums):
                 row.append('')
             for a in range(0, num_rows):
                 settings.contents.insert(settings.current_row_idx, row)
-            settings.grid_shifting = True
             settings.grid.erase()
     except ValueError:
         pass
@@ -47,7 +45,6 @@ def insert_cols(command_nums):
             for a in range(0, num_cols):
                 for row in settings.contents:
                     row.insert(settings.current_col_idx, '')
-            settings.grid_shifting = True
             settings.grid.erase()
     except ValueError:
         pass
@@ -68,7 +65,8 @@ def delete_rows(command_nums):
                 num_rows = total_rows - settings.current_row_idx
             for a in range(0,num_rows):
                 del(settings.contents[settings.current_row_idx])
-            settings.grid_shifting = True
+            settings.grid.erase()
+
     except ValueError:
         pass
 
@@ -83,7 +81,7 @@ def delete_cols(command_nums):
             for a in range(0, num_cols):
                 for row in settings.contents:
                     del(row[settings.current_col_idx])
-            settings.grid_shifting = True
+            settings.grid.erase()
     except ValueError:
         pass
 
@@ -146,7 +144,6 @@ def quick_scroll(stdscr, direction):
     if direction == 'w':
         # if user is at top of screen
         if settings.current_row_idx == settings.h_holder:
-            settings.grid_shifting = True
             if settings.current_row_idx - h <= 0:
                 # scroll all the way up since we scroll less than screen height
                 settings.current_row_idx = 0
@@ -160,7 +157,6 @@ def quick_scroll(stdscr, direction):
             settings.current_row_idx = settings.h_holder
     elif direction == 'a':
         if settings.current_col_idx == settings.w_holder // settings.cell_w:
-            settings.grid_shifting = True
             if settings.current_col_idx - w // settings.cell_w <= 0:
                 # scroll all the way left since we scroll less than screen width
                 settings.current_col_idx = 0
@@ -173,7 +169,6 @@ def quick_scroll(stdscr, direction):
             settings.current_col_idx = settings.w_holder // settings.cell_w
     elif direction == 's':
         if settings.current_row_idx == settings.h_holder + h - 1:
-            settings.grid_shifting = True
             # scroll down by screen height
             settings.current_row_idx = settings.current_row_idx + h
             settings.h_holder = settings.h_holder + h
@@ -182,7 +177,6 @@ def quick_scroll(stdscr, direction):
             settings.current_row_idx = settings.h_holder + h - 1
     else: # the character is 'd'
         if settings.current_col_idx == (settings.w_holder + w // settings.cell_w * settings.cell_w - settings.cell_w) // settings.cell_w: # we subtract settings.cell_w because we want to scroll one cell less than the full width of the screen otherwise we will go out of bounds
-            settings.grid_shifting = True
             # scroll right by screen width
             settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
             settings.w_holder = settings.w_holder + w // settings.cell_w * settings.cell_w # divide and multiply to truncate so that w is a multiple of cell_w

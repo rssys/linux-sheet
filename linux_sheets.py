@@ -75,22 +75,18 @@ def handle_basic_navigation(key):
         settings.current_row_idx -= 1
         if settings.current_row_idx < settings.h_holder:
             settings.h_holder -= 1
-            # settings.grid_shifting = True
     elif key == curses.KEY_DOWN:
         settings.current_row_idx += 1
         if settings.current_row_idx >= settings.h_holder + settings.grid_h:
             settings.h_holder += 1
-            # settings.grid_shifting = True
     elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
         settings.current_col_idx -= 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
             settings.w_holder -= settings.cell_w
-            # settings.grid_shifting = True
     elif key == curses.KEY_RIGHT:
         settings.current_col_idx += 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
             settings.w_holder += settings.cell_w
-            # settings.grid_shifting = True
 
 def handle_virtual_mode(stdscr,key):
     if key == ord('v'):
@@ -102,7 +98,8 @@ def handle_virtual_mode(stdscr,key):
             settings.highlight_prev_y = settings.current_row_idx
         else:
             # this is to remove the highlighting
-            create_without_grid_lines(stdscr)
+            settings.grid.erase()
+
     elif key == ord('y') and settings.visual_mode:
         copy()
 
@@ -142,8 +139,6 @@ def handle_resize(stdscr,key):
             create_without_grid_lines(stdscr)
 
 def handle_grid_update(stdscr, key):
-    # if not settings.grid_shifting and key != curses.KEY_RESIZE:
-        # stdscr.refresh()
     if settings.visual_mode:
         highlight()
         settings.highlight_prev_x = settings.current_col_idx
@@ -186,8 +181,6 @@ def main(stdscr):
     while settings.user_exited == False:
         # read in user input
         key = stdscr.getch()
-        # always reset grid_shifting to false
-        # settings.grid_shifting = False
         handle_virtual_mode(stdscr,key)
         handle_basic_navigation(key)
         handle_resize(stdscr,key)

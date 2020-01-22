@@ -9,8 +9,6 @@ contents = []
 index_dict = {}
 # the grid object that will hold all the contents
 grid = None
-# boolean to determine whether or not the grid needs to be shifted at any given moment
-grid_shifting = False
 # height and width of the screen
 h = 0
 w = 0

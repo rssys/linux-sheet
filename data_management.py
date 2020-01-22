@@ -68,4 +68,3 @@ def write_to_cell(stdscr):
     stdscr.clrtoeol()
     settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
     settings.grid.clrtoeol()
-    # settings.grid_shifting = True

@@ -127,7 +127,8 @@ def copy():
         settings.highlight_data.append([])
     for y in range(0, rows):
         for x in range(0,cols):
-            settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
+            if start_y+y < len(settings.contents) and start_x+x < len(settings.contents[0]):
+                settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
     # settings.grid.move(21,0)
     # settings.grid.clrtoeol()
     # settings.grid.addstr(21,20,str(settings.highlight_data))

@@ -37,6 +37,8 @@ def big_commands(stdscr):
     if command == "wq":
         settings.user_exited = True
         save_data()
+    elif command == "q":
+        settings.user_exited = True
     elif command == "ir":
         insert_row("1")
     elif command == "ic":
@@ -90,7 +92,7 @@ def handle_basic_navigation(key):
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
             settings.w_holder += settings.cell_w
 
-def handle_virtual_mode(stdscr,key):
+def handle_visual_mode(stdscr,key):
     if key == ord('v'):
         settings.visual_mode = not settings.visual_mode
         if settings.visual_mode:
@@ -191,7 +193,7 @@ def main(stdscr):
     while settings.user_exited == False:
         # read in user input
         key = stdscr.getch()
-        handle_virtual_mode(stdscr,key)
+        handle_visual_mode(stdscr,key)
         handle_basic_navigation(key)
         handle_resize(stdscr,key)
         if not settings.visual_mode:

@@ -4,6 +4,9 @@ import curses
 import settings
 
 from dimensions import get_dimensions
+from data_management import pad_data_with_commas
+from data_management import extend_rows
+from data_management import extend_cols
 
 def delete_cell():
     if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]):
@@ -101,15 +104,7 @@ def get_highlight_coordinates():
     return start_x, start_y, cols_to_highlight, rows_to_highlight
 
 def highlight():
-    # # get smaller x and y values
-    # start_x = min(settings.current_col_idx, settings.highlight_start_x)
-    # start_y = min(settings.current_row_idx, settings.highlight_start_y)
-    # # get number of rows and cols to highlight
-    # cols_to_highlight = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
-    # rows_to_highlight = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
     start_x, start_y, cols_to_highlight, rows_to_highlight = get_highlight_coordinates()
-    # settings.grid.addstr(21,20,"end_x:"+str(settings.current_col_idx) + " end_y:"+ str(settings.current_row_idx))
-    # settings.grid.addstr(20,20,"start_x:"+str(settings.highlight_start_x) + " start_y:"+ str(settings.highlight_start_y))
     # get ending coordinates
     end_x = start_x + cols_to_highlight
     end_y = start_y + rows_to_highlight
@@ -125,10 +120,6 @@ def highlight():
             settings.grid.chgat(settings.highlight_prev_y, col * settings.cell_w, settings.cell_w, curses.A_NORMAL)
 
 def copy():
-    # start_x = min(settings.current_col_idx, settings.highlight_start_x)
-    # start_y = min(settings.current_row_idx, settings.highlight_start_y)
-    # cols = abs(settings.current_col_idx - settings.highlight_start_x) + 1 # the + 1 is because we always highlight start col
-    # rows = abs(settings.current_row_idx - settings.highlight_start_y) + 1 # the + 1 is because we always highlight start row
     start_x, start_y, cols, rows = get_highlight_coordinates()
     settings.highlight_data = []
     # set up the 2d list
@@ -137,12 +128,29 @@ def copy():
     for y in range(0, rows):
         for x in range(0,cols):
             settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
-    settings.grid.move(21,0)
-    settings.grid.clrtoeol()
-    settings.grid.addstr(21,20,str(settings.highlight_data))
+    # settings.grid.move(21,0)
+    # settings.grid.clrtoeol()
+    # settings.grid.addstr(21,20,str(settings.highlight_data))
 
 def paste():
-    pass
+    content_rows = len(settings.contents)
+    content_cols = len(settings.contents[0])
+    required_rows = settings.current_row_idx + len(settings.highlight_data)
+    required_cols = settings.current_col_idx + len(settings.highlight_data[0])
+    if required_rows > content_rows and required_cols < content_cols:
+        extend_rows(content_rows, required_rows)
+        pad_data_with_commas()
+    elif required_rows < content_rows and required_cols > content_cols:
+        extend_cols(content_cols, required_cols)
+        pad_data_with_commas()
+    elif required_rows > content_rows and required_cols > content_cols:
+        extend_cols(content_cols, required_cols)
+        extend_rows(content_rows, required_rows)
+        pad_data_with_commas()
+    # insert the data
+    for y, row in enumerate(settings.highlight_data):
+        for x, element in enumerate(row):
+            settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = settings.highlight_data[y][x]
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):

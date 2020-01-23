@@ -34,6 +34,14 @@ def read_data(stdscr):
 def get_csv_string_format(user_input):
     return str(settings.current_row_idx) + "|" + str(settings.current_col_idx) + "|" + user_input
 
+def extend_rows(content_rows, required_rows):
+    for a in range(content_rows, required_rows):
+        settings.contents.append([])
+
+def extend_cols(content_cols, required_cols):
+    for a in range(content_cols, required_cols):
+        settings.contents[0].append('')
+
 # everytime we write to a cell using regular CSV format we have to check if we need to pad commas so each row is the same length
 def pad_data_with_commas():
     max_len = max(len(x) for x in settings.contents)

@@ -25,6 +25,7 @@ from features import delete_row
 from features import delete_col
 from features import highlight
 from features import copy
+from features import paste
 from features import delete_cell
 
 def big_commands(stdscr):
@@ -103,6 +104,10 @@ def handle_virtual_mode(stdscr,key):
 
     elif key == ord('y') and settings.visual_mode:
         copy()
+        settings.grid.erase()
+        settings.visual_mode = False
+    elif key == ord('p'):
+        paste()
 
 def handle_features(stdscr,key):
     if key == ord('w'):
@@ -115,6 +120,8 @@ def handle_features(stdscr,key):
         quick_scroll(stdscr, 'd')
     elif key == ord('r'):
         delete_cell();
+    # elif key == ord('p'):
+    #     paste()
 
 def handle_big_commands(stdscr, key):
         if key == ord(':'):

@@ -26,13 +26,13 @@ from features import delete_col
 from features import highlight
 from features import copy
 from features import paste
+from features import search
 from features import delete_cell
 
 def big_commands(stdscr):
-    h, w = stdscr.getmaxyx()
     curses.echo()
-    stdscr.addstr(h-1,0,":")
-    command = stdscr.getstr(h-1,1).decode('utf-8')
+    stdscr.addstr(settings.h-1,0,":")
+    command = stdscr.getstr(settings.h-1,1).decode('utf-8')
     curses.noecho()
     if command == "wq":
         settings.user_exited = True
@@ -60,7 +60,10 @@ def big_commands(stdscr):
             command_nums = command_parts[1]
             # handle each type of command
             if command == "goto":
-                go_to(command_nums)
+                coordinates = command_nums.split(',')
+                y = int(coordinates[0])
+                x = int(coordinates[1])
+                go_to(y,x)
             elif command == "ir":
                 insert_rows(command_nums)
             elif command == "ic":
@@ -122,6 +125,12 @@ def handle_features(stdscr,key):
         quick_scroll(stdscr, 'd')
     elif key == ord('r'):
         delete_cell();
+    elif key == ord('f'):
+        curses.echo()
+        stdscr.addstr(settings.h-1,0,"")
+        search_term = stdscr.getstr(settings.h-1,1).decode('utf-8')
+        curses.noecho()
+        search(search_term)
     # elif key == ord('p'):
     #     paste()
 

@@ -14,15 +14,12 @@ def delete_cell():
         settings.grid.move(settings.current_row_idx, 0);
         settings.grid.clrtoeol();
 
-def go_to(command_nums):
-    coordinates = command_nums.split(',')
-    row = int(coordinates[0])
-    col = int(coordinates[1])
-    if row >= 0 and col >= 0:
-        settings.current_row_idx = row
-        settings.h_holder = row
-        settings.current_col_idx = col
-        settings.w_holder = col * settings.cell_w
+def go_to(y, x):
+    if y >= 0 and x >= 0:
+        settings.current_row_idx = y
+        settings.h_holder = y
+        settings.current_col_idx = x
+        settings.w_holder = x * settings.cell_w
         # determine if grid must be shifted
 
 def insert_row(command_nums):
@@ -152,6 +149,12 @@ def paste():
     for y, row in enumerate(settings.highlight_data):
         for x, element in enumerate(row):
             settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = element
+
+def search(search_term):
+    for y, row in enumerate(settings.contents):
+        for x, element in enumerate(row):
+            if element == search_term:
+                go_to(y, x)
 
 # TODO replace h and w with h_q_scroll and w_q_scroll later on when you decide an interval to quick scroll
 def quick_scroll(stdscr, direction):

@@ -1,7 +1,24 @@
 import csv
 import sys
 import curses
+from abc import ABC, abstractmethod
 contents = []
+
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+    @abstractmethod
+    def perimeter(self):
+        pass
+
+class Square(Shape):
+    def __init__(self, side):
+        self.side = side
+    def area(self):
+        return self.side * self.side
+    def perimeter(self):
+        return 4 * self.side
 
 def main(stdscr):
     file_name = sys.argv[1]
@@ -20,14 +37,17 @@ def main(stdscr):
 
     # pad contents with commas
     max_len = max(len(x) for x in contents)
-    print(max_len)
+    # print(max_len)
     for index, element in enumerate(contents):
         x =len(element)
         for y in range(x, max_len):
             contents[index].append('')
             # print(y, max_len)
     # print int("['4")
-    print(contents)
+    # print(contents)
+    square = Square(5)
+    print(square.area())
+    print(square.perimeter())
     # for row in contents:
     #     for element in row:
     #         print element

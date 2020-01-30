@@ -125,7 +125,7 @@ def handle_commands(key):
     elif key == ord('d'):
         quick_scroll('d')
     elif key == ord('r'):
-        delete_cell();
+        settings.c_manager.do(delete_cell())
     elif key == ord('f'):
         curses.echo()
         settings.stdscr.addstr(settings.h-1,0,"")

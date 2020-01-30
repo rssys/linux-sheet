@@ -99,11 +99,25 @@ class write_to_cell:
         settings.grid.move((self.row), settings.dist_from_wall + (self.col * settings.cell_w))
         settings.grid.clrtoeol()
 
-def delete_cell():
-    if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]):
-        settings.contents[settings.current_row_idx][settings.current_col_idx] = '';
-        settings.grid.move(settings.current_row_idx, 0);
-        settings.grid.clrtoeol();
+class delete_cell:
+    def __init__(self):
+        self.row = 0
+        self.col = 0
+        self.element = ''
+    def __call__(self):
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+        if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]):
+            self.element = settings.contents[settings.current_row_idx][settings.current_col_idx]
+            settings.contents[settings.current_row_idx][settings.current_col_idx] = ''
+            settings.grid.move(settings.current_row_idx, 0);
+            settings.grid.clrtoeol();
+
+    def undo(self):
+        if self.row < len(settings.contents) and self.col < len(settings.contents[0]):
+            settings.contents[self.row][self.col] = self.element
+            # settings.grid.move((self.row), settings.dist_from_wall + (self.col * settings.cell_w))
+            # settings.grid.clrtoeol()
 
 def go_to(y, x):
     if y >= 0 and x >= 0:

@@ -48,6 +48,8 @@ h_q_scroll = 0
 w_q_scroll = 0
 # boolean for whether or not visual mode is active (for highlighting, copy/paste)
 visual_mode = False
+
+# TODO these variables change a lot while the program is being used, separate them into a separate file
 # coordinates for where the user entered visual mode
 highlight_start_x = 0
 highlight_start_y = 0
@@ -59,3 +61,5 @@ highlight_prev_x = 0
 highlight_prev_y = 0
 # this 2d list is for storing the data that the user highlights
 highlight_data = []
+# these are for keeping track of how many rows and cols are to be deleted
+rows_to_delete = 0

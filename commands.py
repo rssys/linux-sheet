@@ -127,12 +127,6 @@ def go_to(y, x):
         settings.w_holder = x * settings.cell_w
         # determine if grid must be shifted
 
-def insert_row(command_nums):
-    insert_rows(command_nums)
-
-def insert_col(command_nums):
-    insert_cols(command_nums)
-
 def insert_rows(command_nums):
     try:
         num_rows = int(command_nums)
@@ -159,12 +153,6 @@ def insert_cols(command_nums):
             settings.grid.erase()
     except ValueError:
         pass
-
-def delete_row(command_nums):
-    delete_rows(command_nums)
-
-def delete_col(command_nums):
-    delete_cols(command_nums)
 
 def delete_rows(command_nums):
     try:

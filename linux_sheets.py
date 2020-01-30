@@ -18,12 +18,8 @@ from commands import quick_scroll
 from commands import go_to
 from commands import insert_rows
 from commands import insert_cols
-from commands import insert_row
-from commands import insert_col
 from commands import delete_rows
 from commands import delete_cols
-from commands import delete_row
-from commands import delete_col
 from commands import highlight
 from commands import copy
 from commands import paste
@@ -41,13 +37,13 @@ def big_commands():
     elif command == "q":
         settings.user_exited = True
     elif command == "ir":
-        insert_row("1")
+        insert_rows("1")
     elif command == "ic":
-        insert_col("1")
+        insert_cols("1")
     elif command == "dr":
-        delete_row("1")
+        delete_rows("1")
     elif command == "dc":
-        delete_col("1")
+        delete_cols("1")
     else:
         # handle commands in the form command:line number/coordinates.
         # Examples:

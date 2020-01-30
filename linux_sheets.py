@@ -6,28 +6,29 @@ import settings
 from data_management import read_data
 from data_management import save_data
 from data_management import index_contents
-from data_management import write_to_cell
 from grid_creation import create_without_grid_lines
 from grid_creation import create_with_grid_lines
 from grid_creation import refresh_grid
 from dimensions import get_dimensions
 from help_menu import navigate_help_menu
 from help_menu import pop_up_help
-from features import quick_scroll
-from features import go_to
-from features import insert_rows
-from features import insert_cols
-from features import insert_row
-from features import insert_col
-from features import delete_rows
-from features import delete_cols
-from features import delete_row
-from features import delete_col
-from features import highlight
-from features import copy
-from features import paste
-from features import search
-from features import delete_cell
+from commands import command_manager
+from commands import write_to_cell
+from commands import quick_scroll
+from commands import go_to
+from commands import insert_rows
+from commands import insert_cols
+from commands import insert_row
+from commands import insert_col
+from commands import delete_rows
+from commands import delete_cols
+from commands import delete_row
+from commands import delete_col
+from commands import highlight
+from commands import copy
+from commands import paste
+from commands import search
+from commands import delete_cell
 
 def big_commands():
     curses.echo()
@@ -114,7 +115,7 @@ def handle_visual_mode(key):
     elif key == ord('p'):
         paste()
 
-def handle_features(key):
+def handle_commands(key):
     if key == ord('w'):
         quick_scroll('w')
     elif key == ord('a'):
@@ -131,8 +132,8 @@ def handle_features(key):
         search_term = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
         curses.noecho()
         search(search_term)
-    # elif key == ord('p'):
-    #     paste()
+    elif key == ord('u'):
+        settings.c_manager.undo()
 
 def handle_big_commands(key):
         if key == ord(':'):
@@ -165,15 +166,6 @@ def handle_grid_update(key):
         settings.highlight_prev_x = settings.current_col_idx
         settings.highlight_prev_y = settings.current_row_idx
     refresh_grid()
-    # else:
-    #     create_without_grid_lines()
-    #     # settings.grid.addstr(20,20,"created GRID")
-    #     if settings.visual_mode:
-    #         highlight()
-    #         settings.highlight_prev_x = settings.current_col_idx
-    #         settings.highlight_prev_y = settings.current_row_idx
-    #         refresh_grid()
-    #     # TODO we might have to rehighlight everything
 
 def handle_help_menu(key):
     if key == ord('h'):
@@ -181,10 +173,11 @@ def handle_help_menu(key):
 
 def handle_inserting(key):
     if key == ord('i'):
-        write_to_cell()
+        settings.c_manager.do(write_to_cell())
 
 def main(stdscr):
     settings.stdscr = stdscr
+    settings.c_manager = command_manager()
     settings.file_name = sys.argv[1]
     # set the format that the program will use (either normal CSV with commas or my own with coordinates)
     # settings.format = "my_format"
@@ -209,7 +202,7 @@ def main(stdscr):
         if not settings.visual_mode:
             handle_help_menu(key)
             handle_inserting(key)
-            handle_features(key)
+            handle_commands(key)
         handle_big_commands(key)
         handle_grid_update(key)
 

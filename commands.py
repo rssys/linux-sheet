@@ -9,23 +9,69 @@ from data_management import pad_data_with_commas
 from data_management import extend_rows
 from data_management import extend_cols
 
-# class Command(ABC):
-#     @abstractmethod
-#     def __call__(self):
-#         pass
-#     @abstractmethod
-#     def undo(self):
-#         pass
 
-
-class write_to_cell():
+class command_manager:
     def __init__(self):
-        pass
+        self.undo_commands = []
+        self.redo_commands = []
+    def push_undo_command(self, command):
+        self.undo_commands.append(command)
+    def pop_undo_command(self):
+        # try:
+        #     last_undo_command = self.undo_commands.pop()
+        # except IndexError:
+        #     raise EmptyCommandStackError()
+        # return last_undo_command
+        last_undo_command = self.undo_commands.pop()
+        return last_undo_command
+
+    def push_redo_command(self, command):
+        self.redo_commands.append(command)
+
+    def pop_redo_command(self):
+        try:
+            last_redo_command = self.redo_commands.pop()
+        except IndexError:
+            raise EmptyCommandStackError()
+        return last_redo_command
+
+    def do(self, command):
+        command()
+        self.push_undo_command(command)
+        # clear the redo stack when a new command was executed
+        self.redo_commands[:] = []
+
+    def undo(self, n=1):
+        for _ in range(n):
+            if len(self.undo_commands) != 0:
+                command = self.pop_undo_command()
+                command.undo()
+                self.push_redo_command(command)
+            else:
+                # TODO print to the screen that there are no more commands to undo
+                pass
+    def redo(self, n=1):
+        for _ in range(n):
+            if len(self.redo_commands) != 0:
+                command = self.pop_redo_command()
+                command()
+                self.push_undo_command(command)
+            else:
+                # TODO print to the screen that there are no more commands to redo
+                pass
+
+class write_to_cell:
+    def __init__(self):
+        self.row = 0
+        self.col = 0
     def __call__(self):
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+
         curses.echo()
-        # user_input = settings.settings.stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
-        h, w = settings.settings.stdscr.getmaxyx()
-        user_input = settings.settings.stdscr.getstr(h-1, 0)
+        # user_input = settings.stdscr.getstr(current_row_idx + top_margin - h_holder, current_col_idx * cell_w + dist_from_wall + left_margin - w_holder)
+        h, w = settings.stdscr.getmaxyx()
+        user_input = settings.stdscr.getstr(h-1, 0)
         # return if the string was empty
         if not user_input:
             return
@@ -36,7 +82,7 @@ class write_to_cell():
             else:
                 settings.index_dict[str(settings.current_row_idx) + str(settings.current_col_idx)] = len(settings.contents)
                 settings.contents.append([get_csv_string_format(user_input)])
-            settings.settings.stdscr.move(settings.current_row_idx + settings.top_margin - settings.h_holder, settings.current_col_idx * settings.cell_w + settings.dist_from_wall + settings.left_margin - settings.w_holder)
+            settings.stdscr.move(settings.current_row_idx + settings.top_margin - settings.h_holder, settings.current_col_idx * settings.cell_w + settings.dist_from_wall + settings.left_margin - settings.w_holder)
         else:
             while len(settings.contents) <= settings.current_row_idx:
                 settings.contents.append([])
@@ -44,12 +90,14 @@ class write_to_cell():
                 settings.contents[settings.current_row_idx].append('')
             settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input.decode('utf-8')
             pad_data_with_commas()
-        settings.settings.stdscr.clrtoeol()
+        settings.stdscr.clrtoeol()
         settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
         settings.grid.clrtoeol()
 
     def undo(self):
-        pass
+        settings.contents[settings.current_row_idx][settings.current_col_idx] = ''
+        settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
+        settings.grid.clrtoeol()
 
 def delete_cell():
     if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]):

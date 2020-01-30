@@ -61,5 +61,3 @@ highlight_prev_x = 0
 highlight_prev_y = 0
 # this 2d list is for storing the data that the user highlights
 highlight_data = []
-# these are for keeping track of how many rows and cols are to be deleted
-rows_to_delete = 0

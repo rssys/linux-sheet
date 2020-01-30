@@ -35,8 +35,18 @@ class command_manager:
             raise EmptyCommandStackError()
         return last_redo_command
 
-    def do(self, command):
-        command()
+    def do(self, command, *args):
+        args_list = [arg for arg in args]
+        num_args = len(args_list)
+
+        # TODO continue the list if you implement features with more arguments
+        if num_args == 0:
+            command()
+        elif num_args == 1:
+            command(args_list[0])
+        elif num_args == 2:
+            command(args_list[0], args_list[1])
+
         self.push_undo_command(command)
         # clear the redo stack when a new command was executed
         self.redo_commands[:] = []
@@ -127,20 +137,41 @@ def go_to(y, x):
         settings.w_holder = x * settings.cell_w
         # determine if grid must be shifted
 
-def insert_rows(command_nums):
-    try:
-        num_rows = int(command_nums)
-        # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
-        if settings.current_row_idx < len(settings.contents):
-            row_len = len(settings.contents[0])
-            row = []
-            for comma in range(0, row_len):
-                row.append('')
-            for a in range(0, num_rows):
-                settings.contents.insert(settings.current_row_idx, row)
-            settings.grid.erase()
-    except ValueError:
-        pass
+class insert_rows:
+    def __init__(self):
+        self.rows = 0
+        self.cols = 0
+        self.num_rows = ''
+    def __call__(self, command_nums):
+        try:
+            num_rows = int(command_nums)
+            self.rows = settings.current_row_idx
+            self.cols = settings.current_col_idx
+            self.num_rows = command_nums
+            # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
+            if settings.current_row_idx < len(settings.contents):
+                row_len = len(settings.contents[0])
+                row = []
+                for comma in range(0, row_len):
+                    row.append('')
+                for a in range(0, num_rows):
+                    settings.contents.insert(settings.current_row_idx, row)
+                settings.grid.erase()
+        except ValueError:
+            pass
+    def undo(self):
+        # store the user's current position
+        user_rows = settings.current_row_idx
+        user_cols = settings.current_col_idx
+        # move to where the rows need to be deleted
+        settings.current_row_idx = self.rows
+        settings.current_col_idx = self.cols
+        # delete rows
+        delete_rows(self.num_rows)
+        # move the user back to original position
+        settings.current_row_idx = user_rows
+        settings.current_col_idx = user_cols
+
 
 def insert_cols(command_nums):
     try:

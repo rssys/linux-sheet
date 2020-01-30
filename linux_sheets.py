@@ -37,9 +37,9 @@ def big_commands():
     elif command == "q":
         settings.user_exited = True
     elif command == "ir":
-        insert_rows("1")
+        settings.c_manager.do(insert_rows(), "1")
     elif command == "ic":
-        insert_cols("1")
+        settings.c_manager.do(insert_cols(), "1")
     elif command == "dr":
         delete_rows("1")
     elif command == "dc":
@@ -62,9 +62,10 @@ def big_commands():
                 x = int(coordinates[1])
                 go_to(y,x)
             elif command == "ir":
-                insert_rows(command_nums)
+                settings.c_manager.do(insert_rows(), command_nums)
             elif command == "ic":
-                insert_cols(command_nums)
+                settings.c_manager.do(insert_cols(), command_nums)
+                # insert_cols(command_nums)
             elif command == "dr":
                 delete_rows(command_nums)
             elif command == "dc":

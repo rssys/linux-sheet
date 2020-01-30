@@ -95,8 +95,8 @@ class write_to_cell:
         settings.grid.clrtoeol()
 
     def undo(self):
-        settings.contents[settings.current_row_idx][settings.current_col_idx] = ''
-        settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
+        settings.contents[self.row][self.col] = ''
+        settings.grid.move((self.row), settings.dist_from_wall + (self.col * settings.cell_w))
         settings.grid.clrtoeol()
 
 def delete_cell():

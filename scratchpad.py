@@ -20,7 +20,7 @@ class Square(Shape):
     def perimeter(self):
         return 4 * self.side
 
-def main(stdscr):
+def main():
     file_name = sys.argv[1]
     global contents
     with open(file_name, 'r') as file:
@@ -28,8 +28,8 @@ def main(stdscr):
         # get as 2d list, but sum() flattens it into 1d list
         contents = list(reader)
 
-    h, w = stdscr.getmaxyx()
-    stdscr.refresh()
+    h, w = settings.stdscr.getmaxyx()
+    settings.stdscr.refresh()
     # test appending to the list
     while len(contents) < 4:
         contents.append([])
@@ -51,12 +51,12 @@ def main(stdscr):
     # for row in contents:
     #     for element in row:
     #         print element
-    stdscr.refresh()
+    settings.stdscr.refresh()
     with open('test_file_3.csv', 'w') as csvFile:
         writer = csv.writer(csvFile)
         writer.writerows(contents)
     while True:
-        key = stdscr.getch()
+        key = settings.stdscr.getch()
 
 
 if __name__ == '__main__':

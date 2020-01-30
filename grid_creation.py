@@ -9,9 +9,9 @@ from printing_to_screen import print_data
 from printing_to_screen import print_col_letters
 from printing_to_screen import print_row_numbers
 
-def create_without_grid_lines(stdscr):
+def create_without_grid_lines():
     # need to erase to clear any strings that were previously painted that now shouldn't be there
-    stdscr.erase()
+    settings.stdscr.erase()
 
     # create the grid
     settings.grid = curses.newpad(1000,1000)
@@ -20,14 +20,14 @@ def create_without_grid_lines(stdscr):
     #     settings.biggest_h = settings.grid_h + settings.h_holder
     #     settings.biggest_w = settings.grid_w + settings.w_holder
     # settings.grid.addstr(20,settings.current_col_idx*settings.cell_w,str(settings.biggest_w))
-    refresh_grid(stdscr)
+    refresh_grid()
 
-def refresh_grid(stdscr):
-    print_current_location(stdscr)
+def refresh_grid():
+    print_current_location()
     print_data()
-    print_col_letters(stdscr)
-    print_row_numbers(stdscr)
-    stdscr.refresh()
+    print_col_letters()
+    print_row_numbers()
+    settings.stdscr.refresh()
     # refresh pad depending on where user is and move cursor
     settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
     try:
@@ -36,8 +36,8 @@ def refresh_grid(stdscr):
         print(str(settings.h_holder))
 
 # This method is outdated and if I do decide to add grid lines it will need to be update
-def create_with_grid_lines(stdscr):
-    h, w = stdscr.getmaxyx()
+def create_with_grid_lines():
+    h, w = settings.stdscr.getmaxyx()
 
     # height and width of the grid window
     grid_h = h - settings.top_margin - settings.bottom_margin

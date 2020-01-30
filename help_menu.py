@@ -6,8 +6,8 @@ import settings
 def navigate_help_menu():
     pass
 
-def pop_up_help(stdscr):
-    h, w = stdscr.getmaxyx()
+def pop_up_help():
+    h, w = settings.stdscr.getmaxyx()
     # manual = curses.newpad(h, w)
     manual = curses.newwin(h, w)
     manual.box()
@@ -19,7 +19,7 @@ def pop_up_help(stdscr):
     manual_y = 0
     manual_x = 0
     while True:
-        key = stdscr.getch()
+        key = settings.stdscr.getch()
         navigating = False
         if key == curses.KEY_UP and manual_y > 0:
             manual_y -=1

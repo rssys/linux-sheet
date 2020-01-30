@@ -1,4 +1,6 @@
 # global variables
+# window object representing the entire screen
+settings.stdscr = None
 # the name of the file we are editing
 file_name = ""
 # the format to be used, this will either be regular CSV with commas or my own format with coordinates attached

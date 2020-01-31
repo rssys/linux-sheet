@@ -339,25 +339,32 @@ def copy():
     # settings.grid.clrtoeol()
     # settings.grid.addstr(21,20,str(settings.highlight_data))
 
-def paste():
-    content_rows = len(settings.contents)
-    content_cols = len(settings.contents[0])
-    required_rows = settings.current_row_idx + len(settings.highlight_data)
-    required_cols = settings.current_col_idx + len(settings.highlight_data[0])
-    if required_rows > content_rows and required_cols <= content_cols:
-        extend_rows(content_rows, required_rows)
-        pad_data_with_commas()
-    elif required_rows <= content_rows and required_cols > content_cols:
-        extend_cols(content_cols, required_cols)
-        pad_data_with_commas()
-    elif required_rows > content_rows and required_cols > content_cols:
-        extend_cols(content_cols, required_cols)
-        extend_rows(content_rows, required_rows)
-        pad_data_with_commas()
-    # insert the data
-    for y, row in enumerate(settings.highlight_data):
-        for x, element in enumerate(row):
-            settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = element
+class paste:
+    def __init__(self):
+        self.row = 0
+        self.col = 0
+        self.paste_data = []
+    def __call__(self):
+        content_rows = len(settings.contents)
+        content_cols = len(settings.contents[0])
+        required_rows = settings.current_row_idx + len(settings.highlight_data)
+        required_cols = settings.current_col_idx + len(settings.highlight_data[0])
+        if required_rows > content_rows and required_cols <= content_cols:
+            extend_rows(content_rows, required_rows)
+            pad_data_with_commas()
+        elif required_rows <= content_rows and required_cols > content_cols:
+            extend_cols(content_cols, required_cols)
+            pad_data_with_commas()
+        elif required_rows > content_rows and required_cols > content_cols:
+            extend_cols(content_cols, required_cols)
+            extend_rows(content_rows, required_rows)
+            pad_data_with_commas()
+        # insert the data
+        for y, row in enumerate(settings.highlight_data):
+            for x, element in enumerate(row):
+                settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = element
+    def undo(self):
+        
 
 def search(search_term):
     for y, row in enumerate(settings.contents):

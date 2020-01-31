@@ -44,6 +44,7 @@ class command_manager:
             command()
         elif num_args == 1:
             command(args_list[0])
+            # settings.grid.addstr(21,20, args_list[0])
         elif num_args == 2:
             command(args_list[0], args_list[1])
 
@@ -165,7 +166,10 @@ class insert_rows:
         settings.current_row_idx = self.rows
         settings.current_col_idx = self.cols
         # delete rows
-        delete_rows(self.num_rows)
+        # since the function is in the class, we need to make a dummy instance
+        dr_instance = delete_rows()
+        # reference the __call__function in the instance
+        dr_instance(self.num_rows)
         # move the user back to original position
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
@@ -198,7 +202,10 @@ class insert_cols:
         settings.current_row_idx = self.rows
         settings.current_col_idx = self.cols
         # delete cols
-        delete_cols(self.num_cols)
+        # since the function is in the class, we need to make a dummy instance
+        dc_instance = delete_cols()
+        # reference the __call__function in the instance
+        dc_instance(self.num_cols)
         # move the user back to original position
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols

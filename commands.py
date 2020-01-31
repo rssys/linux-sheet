@@ -228,9 +228,9 @@ class delete_rows:
             pass
 
     def rewrite_rows(self):
-        for offset in range(0, len(self.rows_data)):
-            index = settings.current_row_idx + offset
-            settings.contents.insert(index, self.rows_data[offset])
+        for row_index in range(0, len(self.rows_data)):
+            scaled_index = settings.current_row_idx + row_index
+            settings.contents.insert(scaled_index, self.rows_data[row_index])
         settings.grid.erase()
 
     def undo(self):
@@ -246,20 +246,52 @@ class delete_rows:
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
 
-def delete_cols(command_nums):
-    try:
-        num_cols = int(command_nums)
-        # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
-        total_cols = len(settings.contents[0])
-        if settings.current_col_idx < total_cols:
-            if settings.current_col_idx + num_cols > total_cols:
-                num_cols = total_cols - settings.current_col_idx
-            for a in range(0, num_cols):
-                for row in settings.contents:
-                    del(row[settings.current_col_idx])
-            settings.grid.erase()
-    except ValueError:
-        pass
+class delete_cols:
+    def __init__(self):
+        self.rows = 0
+        self.cols = 0
+        self.cols_data = []
+    def __call__(self, command_nums):
+        try:
+            num_cols = int(command_nums)
+            self.rows = settings.current_row_idx
+            self.cols = settings.current_col_idx
+            # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
+            total_cols = len(settings.contents[0])
+            if settings.current_col_idx < total_cols:
+                if settings.current_col_idx + num_cols > total_cols:
+                    num_cols = total_cols - settings.current_col_idx
+                for a in range(0, num_cols):
+                    self.cols_data.append([])
+                    for row in settings.contents:
+                        # save the data in the cols for undo
+                        self.cols_data[a].append(row[settings.current_col_idx])
+                        # delete element in col
+                        del(row[settings.current_col_idx])
+                settings.grid.erase()
+        except ValueError:
+            pass
+
+    def rewrite_cols(self):
+        for col_index, col in enumerate(self.cols_data):
+            for row_index in range(0, len(settings.contents)):
+                scaled_index = settings.current_col_idx + col_index
+                settings.contents[row_index].insert(scaled_index, col[row_index])
+        settings.grid.erase()
+
+    def undo(self):
+        # store the user's current position
+        user_rows = settings.current_row_idx
+        user_cols = settings.current_col_idx
+        # move to where the rows need to be rewritten
+        settings.current_row_idx = self.rows
+        settings.current_col_idx = self.cols
+        # rewrite rows
+        self.rewrite_cols()
+        # move the user back to original position
+        settings.current_row_idx = user_rows
+        settings.current_col_idx = user_cols
+
 
 def get_highlight_coordinates():
     # get smaller x and y values

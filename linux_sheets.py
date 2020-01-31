@@ -43,7 +43,7 @@ def big_commands():
     elif command == "dr":
         settings.c_manager.do(delete_rows(), "1")
     elif command == "dc":
-        delete_cols("1")
+        settings.c_manager.do(delete_cols(), "1")
     else:
         # handle commands in the form command:line number/coordinates.
         # Examples:
@@ -69,7 +69,7 @@ def big_commands():
             elif command == "dr":
                 settings.c_manager.do(delete_rows(), command_nums)
             elif command == "dc":
-                delete_cols(command_nums)
+                settings.c_manager.do(delete_cols(), command_nums)
         except ValueError:
             pass
     settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen

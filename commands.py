@@ -126,8 +126,6 @@ class delete_cell:
     def undo(self):
         if self.row < len(settings.contents) and self.col < len(settings.contents[0]):
             settings.contents[self.row][self.col] = self.element
-            # settings.grid.move((self.row), settings.dist_from_wall + (self.col * settings.cell_w))
-            # settings.grid.clrtoeol()
 
 def go_to(y, x):
     if y >= 0 and x >= 0:
@@ -173,32 +171,80 @@ class insert_rows:
         settings.current_col_idx = user_cols
 
 
-def insert_cols(command_nums):
-    try:
-        num_cols = int(command_nums)
-        # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
-        if settings.current_col_idx < len(settings.contents[0]):
-            for a in range(0, num_cols):
-                for row in settings.contents:
-                    row.insert(settings.current_col_idx, '')
-            settings.grid.erase()
-    except ValueError:
-        pass
+class insert_cols:
+    def __init__(self):
+        self.rows = 0
+        self.cols = 0
+        self.num_cols = ''
+    def __call__(self, command_nums):
+        try:
+            num_cols = int(command_nums)
+            self.rows = settings.current_row_idx
+            self.cols = settings.current_col_idx
+            self.num_cols = command_nums
+            # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
+            if settings.current_col_idx < len(settings.contents[0]):
+                for a in range(0, num_cols):
+                    for row in settings.contents:
+                        row.insert(settings.current_col_idx, '')
+                settings.grid.erase()
+        except ValueError:
+            pass
+    def undo(self):
+        # store the user's current position
+        user_rows = settings.current_row_idx
+        user_cols = settings.current_col_idx
+        # move to where the cols need to be deleted
+        settings.current_row_idx = self.rows
+        settings.current_col_idx = self.cols
+        # delete cols
+        delete_cols(self.num_cols)
+        # move the user back to original position
+        settings.current_row_idx = user_rows
+        settings.current_col_idx = user_cols
 
-def delete_rows(command_nums):
-    try:
-        num_rows = int(command_nums)
-        # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
-        total_rows = len(settings.contents)
-        if settings.current_row_idx < total_rows:
-            if settings.current_row_idx + num_rows > total_rows:
-                num_rows = total_rows - settings.current_row_idx
-            for a in range(0,num_rows):
-                del(settings.contents[settings.current_row_idx])
-            settings.grid.erase()
+class delete_rows:
+    def __init__(self):
+        self.rows = 0
+        self.cols = 0
+        self.rows_data = []
+    def __call__(self, command_nums):
+        try:
+            num_rows = int(command_nums)
+            self.rows = settings.current_row_idx
+            self.cols = settings.current_col_idx
+            # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
+            total_rows = len(settings.contents)
+            if settings.current_row_idx < total_rows:
+                if settings.current_row_idx + num_rows > total_rows:
+                    num_rows = total_rows - settings.current_row_idx
+                for a in range(0,num_rows):
+                    # save the data in the rows for undo
+                    self.rows_data.append(settings.contents[settings.current_row_idx])
+                    # delete the row
+                    del(settings.contents[settings.current_row_idx])
+                settings.grid.erase()
+        except ValueError:
+            pass
 
-    except ValueError:
-        pass
+    def rewrite_rows(self):
+        for offset in range(0, len(self.rows_data)):
+            index = settings.current_row_idx + offset
+            settings.contents.insert(index, self.rows_data[offset])
+        settings.grid.erase()
+
+    def undo(self):
+        # store the user's current position
+        user_rows = settings.current_row_idx
+        user_cols = settings.current_col_idx
+        # move to where the rows need to be rewritten
+        settings.current_row_idx = self.rows
+        settings.current_col_idx = self.cols
+        # rewrite rows
+        self.rewrite_rows()
+        # move the user back to original position
+        settings.current_row_idx = user_rows
+        settings.current_col_idx = user_cols
 
 def delete_cols(command_nums):
     try:

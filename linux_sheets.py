@@ -41,7 +41,7 @@ def big_commands():
     elif command == "ic":
         settings.c_manager.do(insert_cols(), "1")
     elif command == "dr":
-        delete_rows("1")
+        settings.c_manager.do(delete_rows(), "1")
     elif command == "dc":
         delete_cols("1")
     else:
@@ -67,7 +67,7 @@ def big_commands():
                 settings.c_manager.do(insert_cols(), command_nums)
                 # insert_cols(command_nums)
             elif command == "dr":
-                delete_rows(command_nums)
+                settings.c_manager.do(delete_rows(), command_nums)
             elif command == "dc":
                 delete_cols(command_nums)
         except ValueError:

@@ -138,14 +138,14 @@ def go_to(y, x):
 
 class insert_rows:
     def __init__(self):
-        self.rows = 0
-        self.cols = 0
+        self.row = 0
+        self.col = 0
         self.num_rows = ''
     def __call__(self, command_nums):
         try:
             num_rows = int(command_nums)
-            self.rows = settings.current_row_idx
-            self.cols = settings.current_col_idx
+            self.row = settings.current_row_idx
+            self.col = settings.current_col_idx
             self.num_rows = command_nums
             # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
             if settings.current_row_idx < len(settings.contents):
@@ -163,8 +163,8 @@ class insert_rows:
         user_rows = settings.current_row_idx
         user_cols = settings.current_col_idx
         # move to where the rows need to be deleted
-        settings.current_row_idx = self.rows
-        settings.current_col_idx = self.cols
+        settings.current_row_idx = self.row
+        settings.current_col_idx = self.col
         # delete rows
         # since the function is in the class, we need to make a dummy instance
         dr_instance = delete_rows()
@@ -177,14 +177,14 @@ class insert_rows:
 
 class insert_cols:
     def __init__(self):
-        self.rows = 0
-        self.cols = 0
+        self.row = 0
+        self.col = 0
         self.num_cols = ''
     def __call__(self, command_nums):
         try:
             num_cols = int(command_nums)
-            self.rows = settings.current_row_idx
-            self.cols = settings.current_col_idx
+            self.row = settings.current_row_idx
+            self.col = settings.current_col_idx
             self.num_cols = command_nums
             # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
             if settings.current_col_idx < len(settings.contents[0]):
@@ -199,8 +199,8 @@ class insert_cols:
         user_rows = settings.current_row_idx
         user_cols = settings.current_col_idx
         # move to where the cols need to be deleted
-        settings.current_row_idx = self.rows
-        settings.current_col_idx = self.cols
+        settings.current_row_idx = self.row
+        settings.current_col_idx = self.col
         # delete cols
         # since the function is in the class, we need to make a dummy instance
         dc_instance = delete_cols()
@@ -212,14 +212,14 @@ class insert_cols:
 
 class delete_rows:
     def __init__(self):
-        self.rows = 0
-        self.cols = 0
+        self.row = 0
+        self.col = 0
         self.rows_data = []
     def __call__(self, command_nums):
         try:
             num_rows = int(command_nums)
-            self.rows = settings.current_row_idx
-            self.cols = settings.current_col_idx
+            self.row = settings.current_row_idx
+            self.col = settings.current_col_idx
             # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
             total_rows = len(settings.contents)
             if settings.current_row_idx < total_rows:
@@ -245,8 +245,8 @@ class delete_rows:
         user_rows = settings.current_row_idx
         user_cols = settings.current_col_idx
         # move to where the rows need to be rewritten
-        settings.current_row_idx = self.rows
-        settings.current_col_idx = self.cols
+        settings.current_row_idx = self.row
+        settings.current_col_idx = self.col
         # rewrite rows
         self.rewrite_rows()
         # move the user back to original position
@@ -255,14 +255,14 @@ class delete_rows:
 
 class delete_cols:
     def __init__(self):
-        self.rows = 0
-        self.cols = 0
+        self.row = 0
+        self.col = 0
         self.cols_data = []
     def __call__(self, command_nums):
         try:
             num_cols = int(command_nums)
-            self.rows = settings.current_row_idx
-            self.cols = settings.current_col_idx
+            self.row = settings.current_row_idx
+            self.col = settings.current_col_idx
             # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
             total_cols = len(settings.contents[0])
             if settings.current_col_idx < total_cols:
@@ -291,8 +291,8 @@ class delete_cols:
         user_rows = settings.current_row_idx
         user_cols = settings.current_col_idx
         # move to where the rows need to be rewritten
-        settings.current_row_idx = self.rows
-        settings.current_col_idx = self.cols
+        settings.current_row_idx = self.row
+        settings.current_col_idx = self.col
         # rewrite rows
         self.rewrite_cols()
         # move the user back to original position

@@ -9,6 +9,9 @@ from printing_to_screen import print_data
 from printing_to_screen import print_col_letters
 from printing_to_screen import print_row_numbers
 
+def check_grid_resize():
+    pass
+
 def create_without_grid_lines():
     # need to erase to clear any strings that were previously painted that now shouldn't be there
     settings.stdscr.erase()

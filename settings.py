@@ -36,7 +36,7 @@ cell_w = 12
 # gap at top, bottom, and left of screen for the row and column bars and for when user enters input
 top_margin = 3
 bottom_margin = 1
-left_margin = 3
+left_margin = 5
 # constant to make sure we jump to the start of the word and not the edge of a cell
 dist_from_wall = 1
 # to keep track of where the screen is to determine if scrolling is needed

@@ -8,7 +8,8 @@ from dimensions import get_dimensions
 from data_management import pad_data_with_commas
 from data_management import extend_rows
 from data_management import extend_cols
-
+from data_management import save_data
+from data_management import read_data
 
 class command_manager:
     def __init__(self):
@@ -153,11 +154,12 @@ class insert_rows:
                 row = []
                 for comma in range(0, row_len):
                     row.append('')
+                # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
                 for a in range(0, num_rows):
                     settings.contents.insert(settings.current_row_idx, row)
                 # pad_data_with_commas()
                 settings.grid.erase()
-                # settings.grid.addstr(22,2,str(settings.contents))
+                # settings.grid.addstr(23,2,str(settings.contents))
         except ValueError:
             pass
     def undo(self):
@@ -270,6 +272,10 @@ class delete_cols:
             total_cols = len(settings.contents[0])
             settings.grid.addstr(21,1, "total_cols "+str(total_cols))
             o_count = 0
+            # TODO FIND A REAL FIX FOR THIS!!!
+            # FOR SOME REASON, RIGHT AFTER INSERTING ROWS, THE ROWS DON'T SEEM TO BE INSERTED CORRECTLY BECAUSE IT CRASHES UNLESS I SAVE THE DATA TO CSV AND READ IT AGAIN
+            save_data()
+            read_data()
             if settings.current_col_idx < total_cols:
                 if settings.current_col_idx + num_cols > total_cols:
                     num_cols = total_cols - settings.current_col_idx
@@ -297,7 +303,7 @@ class delete_cols:
                     settings.grid.addstr(22+o_count-2,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
 
                 # settings.grid.addstr(38,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
-                # settings.grid.erase()
+                settings.grid.erase()
         except IndexError:
             # settings.grid.addstr(21,1, str(num_cols)+", "+str(settings.contents))
             # settings.grid.addstr(22,1, str(self.cols_data))

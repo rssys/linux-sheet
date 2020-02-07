@@ -151,11 +151,11 @@ class insert_rows:
             # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
             if settings.current_row_idx < len(settings.contents):
                 row_len = len(settings.contents[0])
-                row = []
-                for comma in range(0, row_len):
-                    row.append('')
                 # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
                 for a in range(0, num_rows):
+                    row = []
+                    for comma in range(0, row_len):
+                        row.append('')
                     settings.contents.insert(settings.current_row_idx, row)
                 # pad_data_with_commas()
                 settings.grid.erase()
@@ -274,8 +274,8 @@ class delete_cols:
             o_count = 0
             # TODO FIND A REAL FIX FOR THIS!!!
             # FOR SOME REASON, RIGHT AFTER INSERTING ROWS, THE ROWS DON'T SEEM TO BE INSERTED CORRECTLY BECAUSE IT CRASHES UNLESS I SAVE THE DATA TO CSV AND READ IT AGAIN
-            save_data()
-            read_data()
+            # save_data()
+            # read_data()
             if settings.current_col_idx < total_cols:
                 if settings.current_col_idx + num_cols > total_cols:
                     num_cols = total_cols - settings.current_col_idx

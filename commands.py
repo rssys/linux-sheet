@@ -140,13 +140,13 @@ class insert_rows:
     def __init__(self):
         self.row = 0
         self.col = 0
-        self.num_rows = ''
-    def __call__(self, command_nums):
+        self.num_rows = 0
+    def __call__(self, num_rows):
         try:
-            num_rows = int(command_nums)
+            # num_rows = int(command_nums)
             self.row = settings.current_row_idx
             self.col = settings.current_col_idx
-            self.num_rows = command_nums
+            self.num_rows = num_rows
             # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
             if settings.current_row_idx < len(settings.contents):
                 row_len = len(settings.contents[0])
@@ -179,13 +179,13 @@ class insert_cols:
     def __init__(self):
         self.row = 0
         self.col = 0
-        self.num_cols = ''
-    def __call__(self, command_nums):
+        self.num_cols = 0
+    def __call__(self, num_cols):
         try:
-            num_cols = int(command_nums)
+            # num_cols = int(command_nums)
             self.row = settings.current_row_idx
             self.col = settings.current_col_idx
-            self.num_cols = command_nums
+            self.num_cols = num_cols
             # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
             if settings.current_col_idx < len(settings.contents[0]):
                 for a in range(0, num_cols):
@@ -236,7 +236,7 @@ class delete_rows:
 
     def rewrite_rows(self):
         for row_index in range(0, len(self.rows_data)):
-            scaled_index = settings.current_row_idx + row_index
+            scaled_index = self.row + row_index
             settings.contents.insert(scaled_index, self.rows_data[row_index])
         settings.grid.erase()
 
@@ -282,7 +282,7 @@ class delete_cols:
     def rewrite_cols(self):
         for col_index, col in enumerate(self.cols_data):
             for row_index in range(0, len(settings.contents)):
-                scaled_index = settings.current_col_idx + col_index
+                scaled_index = self.col + col_index
                 settings.contents[row_index].insert(scaled_index, col[row_index])
         settings.grid.erase()
 
@@ -355,7 +355,7 @@ class paste:
                 scaled_row = row + self.row
                 scaled_col = col + self.col
                 self.original_data[row][col] = settings.contents[scaled_row][scaled_col]
-                
+
     def __call__(self):
         content_rows = len(settings.contents)
         content_cols = len(settings.contents[0])

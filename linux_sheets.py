@@ -26,6 +26,19 @@ from commands import paste
 from commands import search
 from commands import delete_cell
 
+def separate_command(command):
+    # separate the 2 parts of the command
+    command_parts = command.split(':')
+    command = command_parts[0]
+    command_nums = command_parts[1]
+    return command, command_nums
+
+def str_to_coordinates(str_coordinates):
+    coordinates = str_coordinates.split(',')
+    y = int(coordinates[0])
+    x = int(coordinates[1])
+    return y, x
+
 def big_commands():
     curses.echo()
     settings.stdscr.addstr(settings.h-1,0,":")
@@ -37,13 +50,13 @@ def big_commands():
     elif command == "q":
         settings.user_exited = True
     elif command == "ir":
-        settings.c_manager.do(insert_rows(), "1")
+        settings.c_manager.do(insert_rows(), 1)
     elif command == "ic":
-        settings.c_manager.do(insert_cols(), "1")
+        settings.c_manager.do(insert_cols(), 1)
     elif command == "dr":
-        settings.c_manager.do(delete_rows(), "1")
+        settings.c_manager.do(delete_rows(), 1)
     elif command == "dc":
-        settings.c_manager.do(delete_cols(), "1")
+        settings.c_manager.do(delete_cols(), 1)
     else:
         # handle commands in the form command:line number/coordinates.
         # Examples:
@@ -51,25 +64,29 @@ def big_commands():
         # :goto:20,13 means go to row 20, column 13
         # :ir:10 means insert 10 rows at current location
         try:
-            # separate the 2 parts of the command
-            command_parts = command.split(':')
-            command = command_parts[0]
-            command_nums = command_parts[1]
+            command, command_nums = separate_command(command)
+            # # separate the 2 parts of the command
+            # command_parts = command.split(':')
+            # command = command_parts[0]
+            # command_nums = command_parts[1]
             # handle each type of command
             if command == "goto":
-                coordinates = command_nums.split(',')
-                y = int(coordinates[0])
-                x = int(coordinates[1])
-                go_to(y,x)
+                # coordinates = command_nums.split(',')
+                y, x = str_to_coordinates(command_nums)
+                go_to(y, x)
             elif command == "ir":
-                settings.c_manager.do(insert_rows(), command_nums)
+                num_rows = int(command_nums)
+                settings.c_manager.do(insert_rows(), num_rows)
             elif command == "ic":
-                settings.c_manager.do(insert_cols(), command_nums)
+                num_cols = int(command_nums)
+                settings.c_manager.do(insert_cols(), num_cols)
                 # insert_cols(command_nums)
             elif command == "dr":
-                settings.c_manager.do(delete_rows(), command_nums)
+                num_rows = int(command_nums)
+                settings.c_manager.do(delete_rows(), num_rows)
             elif command == "dc":
-                settings.c_manager.do(delete_cols(), command_nums)
+                num_cols = int(command_nums)
+                settings.c_manager.do(delete_cols(), num_cols)
         except ValueError:
             pass
     settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen

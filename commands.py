@@ -343,12 +343,26 @@ class paste:
     def __init__(self):
         self.row = 0
         self.col = 0
-        self.paste_data = []
+        self.original_data = []
+        for row_index, row in enumerate(settings.highlight_data):
+            self.original_data.append([])
+            for col in enumerate(row):
+                self.original_data[row_index].append('')
+
+    def get_original_data(self):
+        for row in range(0,len(settings.highlight_data)):
+            for col in range(0,len(settings.highlight_data[0])):
+                scaled_row = row + self.row
+                scaled_col = col + self.col
+                self.original_data[row][col] = settings.contents[scaled_row][scaled_col]
+                
     def __call__(self):
         content_rows = len(settings.contents)
         content_cols = len(settings.contents[0])
         required_rows = settings.current_row_idx + len(settings.highlight_data)
         required_cols = settings.current_col_idx + len(settings.highlight_data[0])
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
         if required_rows > content_rows and required_cols <= content_cols:
             extend_rows(content_rows, required_rows)
             pad_data_with_commas()
@@ -359,12 +373,21 @@ class paste:
             extend_cols(content_cols, required_cols)
             extend_rows(content_rows, required_rows)
             pad_data_with_commas()
+        # save the data of the block to be pasted over for undo
+        self.get_original_data()
         # insert the data
         for y, row in enumerate(settings.highlight_data):
             for x, element in enumerate(row):
                 settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = element
+
     def undo(self):
-        
+        for row in range(0,len(self.original_data)):
+            for col in range(0,len(self.original_data[0])):
+                # only erase data that was pasted
+                scaled_row = row + self.row
+                scaled_col = col + self.col
+                settings.contents[scaled_row][scaled_col] = self.original_data[row][col]
+        settings.grid.erase()
 
 def search(search_term):
     for y, row in enumerate(settings.contents):

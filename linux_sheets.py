@@ -110,7 +110,7 @@ def handle_visual_mode(key):
         settings.grid.erase()
         settings.visual_mode = False
     elif key == ord('p'):
-        paste()
+        settings.c_manager.do(paste())
 
 def handle_commands(key):
     if key == ord('w'):

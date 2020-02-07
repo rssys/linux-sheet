@@ -155,7 +155,9 @@ class insert_rows:
                     row.append('')
                 for a in range(0, num_rows):
                     settings.contents.insert(settings.current_row_idx, row)
+                # pad_data_with_commas()
                 settings.grid.erase()
+                # settings.grid.addstr(22,2,str(settings.contents))
         except ValueError:
             pass
     def undo(self):
@@ -258,25 +260,47 @@ class delete_cols:
         self.row = 0
         self.col = 0
         self.cols_data = []
-    def __call__(self, command_nums):
+    def __call__(self, num_cols):
         try:
-            num_cols = int(command_nums)
+            settings.grid.addstr(20,1, "B4 EVERYTHING: "+str(settings.contents))
+            # num_cols = int(command_nums)
             self.row = settings.current_row_idx
             self.col = settings.current_col_idx
             # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
             total_cols = len(settings.contents[0])
+            settings.grid.addstr(21,1, "total_cols "+str(total_cols))
+            o_count = 0
             if settings.current_col_idx < total_cols:
                 if settings.current_col_idx + num_cols > total_cols:
                     num_cols = total_cols - settings.current_col_idx
                 for a in range(0, num_cols):
                     self.cols_data.append([])
-                    for row in settings.contents:
+                    count = 0
+
+                    # for row in settings.contents:
+                    for row in range(0, len(settings.contents)):
+                        # settings.grid.addstr(22+count,1, "row_len:"+str(len(row))+"row:"+str(row)+" contents:"+str(settings.contents))
+                        # settings.grid.addstr(22+o_count+count,1, " contents:"+str(settings.contents))
                         # save the data in the cols for undo
-                        self.cols_data[a].append(row[settings.current_col_idx])
+                        self.cols_data[a].append(settings.contents[row].pop(self.col))
+                        settings.grid.addstr(22+o_count+count,1, " row: "+str(row+1)+" row len:"+str(len(settings.contents[row]))+" a: "+str(a)+" contents:"+str(settings.contents))
+                        # self.cols_data[a].append(settings.contents[row][settings.current_col_idx])
+                        # self.cols_data[a].append(row[settings.current_col_idx])
                         # delete element in col
-                        del(row[settings.current_col_idx])
-                settings.grid.erase()
-        except ValueError:
+                        # settings.grid.addstr(22+count,1, "row_len:"+str(len(row))+"row:"+str(row)+" contents:"+str(settings.contents))
+                        # del(row[settings.current_col_idx])
+                        # del(settings.contents[row][settings.current_col_idx])
+                        # settings.grid.addstr(25+a,1, "IN LOOP: "+str(num_cols)+", "+str(settings.contents))
+                        count+=1
+                        pass
+                    o_count += len(settings.contents)+2
+                    settings.grid.addstr(22+o_count-2,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
+
+                # settings.grid.addstr(38,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
+                # settings.grid.erase()
+        except IndexError:
+            # settings.grid.addstr(21,1, str(num_cols)+", "+str(settings.contents))
+            # settings.grid.addstr(22,1, str(self.cols_data))
             pass
 
     def rewrite_cols(self):

@@ -3,6 +3,7 @@ import sys
 import curses
 import settings
 
+import key_mappings
 from data_management import read_data
 from data_management import save_data
 from data_management import index_contents
@@ -44,18 +45,18 @@ def big_commands():
     settings.stdscr.addstr(settings.h-1,0,":")
     command = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
     curses.noecho()
-    if command == "wq":
+    if command == key_mappings.SAVE_AND_QUIT:
         settings.user_exited = True
         save_data()
-    elif command == "q":
+    elif command == key_mappings.QUIT:
         settings.user_exited = True
-    elif command == "ir":
+    elif command == key_mappings.INSERT_ROW:
         settings.c_manager.do(insert_rows(), 1)
-    elif command == "ic":
+    elif command == key_mappings.INSERT_COL:
         settings.c_manager.do(insert_cols(), 1)
-    elif command == "dr":
+    elif command == key_mappings.DELETE_ROW:
         settings.c_manager.do(delete_rows(), 1)
-    elif command == "dc":
+    elif command == key_mappings.DELETE_COL:
         settings.c_manager.do(delete_cols(), 1)
     else:
         # handle commands in the form command:line number/coordinates.
@@ -70,21 +71,21 @@ def big_commands():
             # command = command_parts[0]
             # command_nums = command_parts[1]
             # handle each type of command
-            if command == "goto":
+            if command == key_mappings.GOTO:
                 # coordinates = command_nums.split(',')
                 y, x = str_to_coordinates(command_nums)
                 go_to(y, x)
-            elif command == "ir":
+            elif command == key_mappings.INSERT_ROW:
                 num_rows = int(command_nums)
                 settings.c_manager.do(insert_rows(), num_rows)
-            elif command == "ic":
+            elif command == key_mappings.INSERT_COL:
                 num_cols = int(command_nums)
                 settings.c_manager.do(insert_cols(), num_cols)
                 # insert_cols(command_nums)
-            elif command == "dr":
+            elif command == key_mappings.DELETE_ROW:
                 num_rows = int(command_nums)
                 settings.c_manager.do(delete_rows(), num_rows)
-            elif command == "dc":
+            elif command == key_mappings.DELETE_COL:
                 num_cols = int(command_nums)
                 settings.c_manager.do(delete_cols(), num_cols)
         except ValueError:
@@ -93,25 +94,25 @@ def big_commands():
     # settings.stdscr.addstr(h-1,0,str(row) + str(col))
 
 def handle_basic_navigation(key):
-    if key == curses.KEY_UP and settings.current_row_idx > 0:
+    if key == key_mappings.UP and settings.current_row_idx > 0:
         settings.current_row_idx -= 1
         if settings.current_row_idx < settings.h_holder:
             settings.h_holder -= 1
-    elif key == curses.KEY_DOWN:
+    elif key == key_mappings.DOWN:
         settings.current_row_idx += 1
         if settings.current_row_idx >= settings.h_holder + settings.grid_h:
             settings.h_holder += 1
-    elif key == curses.KEY_LEFT and settings.current_col_idx > 0:
+    elif key == key_mappings.LEFT and settings.current_col_idx > 0:
         settings.current_col_idx -= 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
             settings.w_holder -= settings.cell_w
-    elif key == curses.KEY_RIGHT:
+    elif key == key_mappings.RIGHT:
         settings.current_col_idx += 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
             settings.w_holder += settings.cell_w
 
 def handle_visual_mode(key):
-    if key == ord('v'):
+    if key == ord(key_mappings.VISUAL_MODE):
         settings.visual_mode = not settings.visual_mode
         if settings.visual_mode:
             settings.highlight_start_x = settings.current_col_idx
@@ -122,31 +123,32 @@ def handle_visual_mode(key):
             # this is to remove the highlighting
             settings.grid.erase()
 
-    elif key == ord('y') and settings.visual_mode:
+    elif key == ord(key_mappings.COPY) and settings.visual_mode:
         copy()
         settings.grid.erase()
         settings.visual_mode = False
-    elif key == ord('p'):
+    elif key == ord(key_mappings.PASTE):
         settings.c_manager.do(paste())
 
 def handle_commands(key):
-    if key == ord('w'):
-        quick_scroll('w')
-    elif key == ord('a'):
-        quick_scroll('a')
-    elif key == ord('s'):
-        quick_scroll('s')
-    elif key == ord('d'):
-        quick_scroll('d')
-    elif key == ord('r'):
+    # if key == ord('w'):
+    if key == ord(key_mappings.QUICK_UP):
+        quick_scroll(key_mappings.QUICK_UP)
+    elif key == ord(key_mappings.QUICK_LEFT):
+        quick_scroll(key_mappings.QUICK_LEFT)
+    elif key == ord(key_mappings.QUICK_DOWN):
+        quick_scroll(key_mappings.QUICK_DOWN)
+    elif key == ord(key_mappings.QUICK_RIGHT):
+        quick_scroll(key_mappings.QUICK_RIGHT)
+    elif key == ord(key_mappings.DELETE_CELL):
         settings.c_manager.do(delete_cell())
-    elif key == ord('f'):
+    elif key == ord(key_mappings.SEARCH):
         curses.echo()
         settings.stdscr.addstr(settings.h-1,0,"")
         search_term = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
         curses.noecho()
         search(search_term)
-    elif key == ord('u'):
+    elif key == ord(key_mappings.UNDO):
         settings.c_manager.undo()
 
 def handle_big_commands(key):
@@ -182,11 +184,11 @@ def handle_grid_update(key):
     refresh_grid()
 
 def handle_help_menu(key):
-    if key == ord('h'):
+    if key == ord(key_mappings.HELP):
         pop_up_help()
 
 def handle_inserting(key):
-    if key == ord('i'):
+    if key == ord(key_mappings.INSERT):
         settings.c_manager.do(write_to_cell())
 
 def main(stdscr):

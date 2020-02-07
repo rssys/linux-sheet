@@ -143,25 +143,21 @@ class insert_rows:
         self.col = 0
         self.num_rows = 0
     def __call__(self, num_rows):
-        try:
-            # num_rows = int(command_nums)
-            self.row = settings.current_row_idx
-            self.col = settings.current_col_idx
-            self.num_rows = num_rows
-            # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
-            if settings.current_row_idx < len(settings.contents):
-                row_len = len(settings.contents[0])
-                # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
-                for a in range(0, num_rows):
-                    row = []
-                    for comma in range(0, row_len):
-                        row.append('')
-                    settings.contents.insert(settings.current_row_idx, row)
-                # pad_data_with_commas()
-                settings.grid.erase()
-                # settings.grid.addstr(23,2,str(settings.contents))
-        except ValueError:
-            pass
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+        self.num_rows = num_rows
+        # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
+        if settings.current_row_idx < len(settings.contents):
+            row_len = len(settings.contents[0])
+            # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
+            for a in range(0, num_rows):
+                row = []
+                for comma in range(0, row_len):
+                    row.append('')
+                settings.contents.insert(settings.current_row_idx, row)
+            # pad_data_with_commas()
+            settings.grid.erase()
+            # settings.grid.addstr(23,2,str(settings.contents))
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -185,19 +181,15 @@ class insert_cols:
         self.col = 0
         self.num_cols = 0
     def __call__(self, num_cols):
-        try:
-            # num_cols = int(command_nums)
-            self.row = settings.current_row_idx
-            self.col = settings.current_col_idx
-            self.num_cols = num_cols
-            # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
-            if settings.current_col_idx < len(settings.contents[0]):
-                for a in range(0, num_cols):
-                    for row in settings.contents:
-                        row.insert(settings.current_col_idx, '')
-                settings.grid.erase()
-        except ValueError:
-            pass
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+        self.num_cols = num_cols
+        # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
+        if settings.current_col_idx < len(settings.contents[0]):
+            for a in range(0, num_cols):
+                for row in settings.contents:
+                    row.insert(settings.current_col_idx, '')
+            settings.grid.erase()
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -219,24 +211,20 @@ class delete_rows:
         self.row = 0
         self.col = 0
         self.rows_data = []
-    def __call__(self, command_nums):
-        try:
-            num_rows = int(command_nums)
-            self.row = settings.current_row_idx
-            self.col = settings.current_col_idx
-            # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
-            total_rows = len(settings.contents)
-            if settings.current_row_idx < total_rows:
-                if settings.current_row_idx + num_rows > total_rows:
-                    num_rows = total_rows - settings.current_row_idx
-                for a in range(0,num_rows):
-                    # save the data in the rows for undo
-                    self.rows_data.append(settings.contents[settings.current_row_idx])
-                    # delete the row
-                    del(settings.contents[settings.current_row_idx])
-                settings.grid.erase()
-        except ValueError:
-            pass
+    def __call__(self, num_rows):
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+        # only delete a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user deletes row at line 200, it won't do anything
+        total_rows = len(settings.contents)
+        if settings.current_row_idx < total_rows:
+            if settings.current_row_idx + num_rows > total_rows:
+                num_rows = total_rows - settings.current_row_idx
+            for a in range(0,num_rows):
+                # save the data in the rows for undo
+                self.rows_data.append(settings.contents[settings.current_row_idx])
+                # delete the row
+                del(settings.contents[settings.current_row_idx])
+            settings.grid.erase()
 
     def rewrite_rows(self):
         for row_index in range(0, len(self.rows_data)):
@@ -263,51 +251,20 @@ class delete_cols:
         self.col = 0
         self.cols_data = []
     def __call__(self, num_cols):
-        try:
-            settings.grid.addstr(20,1, "B4 EVERYTHING: "+str(settings.contents))
-            # num_cols = int(command_nums)
-            self.row = settings.current_row_idx
-            self.col = settings.current_col_idx
-            # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
-            total_cols = len(settings.contents[0])
-            settings.grid.addstr(21,1, "total_cols "+str(total_cols))
-            o_count = 0
-            # TODO FIND A REAL FIX FOR THIS!!!
-            # FOR SOME REASON, RIGHT AFTER INSERTING ROWS, THE ROWS DON'T SEEM TO BE INSERTED CORRECTLY BECAUSE IT CRASHES UNLESS I SAVE THE DATA TO CSV AND READ IT AGAIN
-            # save_data()
-            # read_data()
-            if settings.current_col_idx < total_cols:
-                if settings.current_col_idx + num_cols > total_cols:
-                    num_cols = total_cols - settings.current_col_idx
-                for a in range(0, num_cols):
-                    self.cols_data.append([])
-                    count = 0
-
-                    # for row in settings.contents:
-                    for row in range(0, len(settings.contents)):
-                        # settings.grid.addstr(22+count,1, "row_len:"+str(len(row))+"row:"+str(row)+" contents:"+str(settings.contents))
-                        # settings.grid.addstr(22+o_count+count,1, " contents:"+str(settings.contents))
-                        # save the data in the cols for undo
-                        self.cols_data[a].append(settings.contents[row].pop(self.col))
-                        settings.grid.addstr(22+o_count+count,1, " row: "+str(row+1)+" row len:"+str(len(settings.contents[row]))+" a: "+str(a)+" contents:"+str(settings.contents))
-                        # self.cols_data[a].append(settings.contents[row][settings.current_col_idx])
-                        # self.cols_data[a].append(row[settings.current_col_idx])
-                        # delete element in col
-                        # settings.grid.addstr(22+count,1, "row_len:"+str(len(row))+"row:"+str(row)+" contents:"+str(settings.contents))
-                        # del(row[settings.current_col_idx])
-                        # del(settings.contents[row][settings.current_col_idx])
-                        # settings.grid.addstr(25+a,1, "IN LOOP: "+str(num_cols)+", "+str(settings.contents))
-                        count+=1
-                        pass
-                    o_count += len(settings.contents)+2
-                    settings.grid.addstr(22+o_count-2,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
-
-                # settings.grid.addstr(38,1, "num_cols: "+str(num_cols)+" data: "+str(self.cols_data))
-                settings.grid.erase()
-        except IndexError:
-            # settings.grid.addstr(21,1, str(num_cols)+", "+str(settings.contents))
-            # settings.grid.addstr(22,1, str(self.cols_data))
-            pass
+        settings.grid.addstr(20,1, "B4 EVERYTHING: "+str(settings.contents))
+        # num_cols = int(command_nums)
+        self.row = settings.current_row_idx
+        self.col = settings.current_col_idx
+        # only delete a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user deletes col at col 200, it won't do anything
+        total_cols = len(settings.contents[0])
+        if settings.current_col_idx < total_cols:
+            if settings.current_col_idx + num_cols > total_cols:
+                num_cols = total_cols - settings.current_col_idx
+            for a in range(0, num_cols):
+                self.cols_data.append([])
+                for row in settings.contents:
+                    self.cols_data[a].append(row.pop(settings.current_col_idx))
+            settings.grid.erase()
 
     def rewrite_cols(self):
         for col_index, col in enumerate(self.cols_data):

@@ -9,15 +9,16 @@ from printing_to_screen import print_data
 from printing_to_screen import print_col_letters
 from printing_to_screen import print_row_numbers
 
-def check_grid_resize():
-    pass
-
+def check_grid_resize(y_increase, x_increase):
+    if settings.h_holder + settings.h + y_increase > settings.grid_total_h or (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w:
+        # if settings.grid_total_h * 2 < settings.grid_h_cap:
+        pass
 def create_without_grid_lines():
     # need to erase to clear any strings that were previously painted that now shouldn't be there
     settings.stdscr.erase()
 
     # create the grid
-    settings.grid = curses.newpad(1000,1000)
+    settings.grid = curses.newpad(settings.grid_total_h,settings.grid_total_w)
     # if settings.grid_h + settings.h_holder > settings.biggest_h or settings.grid_w + settings.w_holder > settings.biggest_w:
     #     settings.grid = curses.newpad(settings.grid_h + settings.h_holder, settings.grid_w + settings.w_holder)
     #     settings.biggest_h = settings.grid_h + settings.h_holder

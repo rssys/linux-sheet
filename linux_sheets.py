@@ -7,6 +7,7 @@ import key_mappings
 from data_management import read_data
 from data_management import save_data
 from data_management import index_contents
+from grid_creation import check_grid_resize
 from grid_creation import create_without_grid_lines
 from grid_creation import create_with_grid_lines
 from grid_creation import refresh_grid
@@ -94,6 +95,7 @@ def big_commands():
     # settings.stdscr.addstr(h-1,0,str(row) + str(col))
 
 def handle_basic_navigation(key):
+    check_grid_resize(1,1)
     if key == key_mappings.UP and settings.current_row_idx > 0:
         settings.current_row_idx -= 1
         if settings.current_row_idx < settings.h_holder:

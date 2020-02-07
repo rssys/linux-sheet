@@ -13,6 +13,12 @@ contents = []
 index_dict = {}
 # the grid object that will hold all the contents
 grid = None
+# default grid total height and width
+grid_total_h = 1000
+grid_total_w = 1000
+# cap the grid dimensions
+grid_h_cap = 6240
+grid_w_cap = 6240
 # height and width of the screen
 h = 0
 w = 0

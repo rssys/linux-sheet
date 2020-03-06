@@ -41,11 +41,15 @@ def str_to_coordinates(str_coordinates):
     x = int(coordinates[1])
     return y, x
 
-def big_commands():
-    curses.echo()
-    settings.stdscr.addstr(settings.h-1,0,":")
-    command = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
-    curses.noecho()
+def big_commands(*args):
+    if settings.passed_commands:
+        command = args[0]
+    else:
+        curses.echo()
+        settings.stdscr.addstr(settings.h-1,0,":")
+        command = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
+        curses.noecho()
+
     if command == key_mappings.SAVE_AND_QUIT:
         settings.user_exited = True
         save_data()
@@ -89,8 +93,8 @@ def big_commands():
             elif command == key_mappings.DELETE_COL:
                 num_cols = int(command_nums)
                 settings.c_manager.do(delete_cols(), num_cols)
-        except ValueError:
-            pass
+        except IndexError:
+            print(command)
     settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
     # settings.stdscr.addstr(h-1,0,str(row) + str(col))
 
@@ -203,26 +207,40 @@ def main(stdscr):
     read_data()
     # index_contents()
 
-    # create color schemes for the top and bottom margins
-    curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
+    # determine if we are opening the program or just executing commands and then closing
+    # If there are more than 2 arguments, the user is sending in commands to be done on the file
+    if len(sys.argv) > 2:
+        # set bool to true so when calling big commands, we can pass in commands and it will know to parse them
+        settings.passed_commands = True
+        # start iterating at the second argument and go through all system arguments
+        for arg in sys.argv[1:]:
+            big_commands(arg)
+        # save the data
+        save_data()
+    # Otherwise, open the program normally with the specified file
+    else:
+        # set bool to true so when calling big commands, it parses user inputted command when program is running
+        settings.passed_commands = False
+        # create color schemes for the top and bottom margins
+        curses.init_pair(1, curses.COLOR_BLACK, curses.COLOR_WHITE)
 
-    # get dimensions
-    settings.h, settings.w = settings.stdscr.getmaxyx()
-    settings.grid_h, settings.grid_w = get_dimensions()
-    # initial drawing of grid
-    create_without_grid_lines()
-    while settings.user_exited == False:
-        # read in user input
-        key = settings.stdscr.getch()
-        handle_visual_mode(key)
-        handle_basic_navigation(key)
-        handle_resize(key)
-        if not settings.visual_mode:
-            handle_help_menu(key)
-            handle_inserting(key)
-            handle_commands(key)
-        handle_big_commands(key)
-        handle_grid_update(key)
+        # get dimensions
+        settings.h, settings.w = settings.stdscr.getmaxyx()
+        settings.grid_h, settings.grid_w = get_dimensions()
+        # initial drawing of grid
+        create_without_grid_lines()
+        while settings.user_exited == False:
+            # read in user input
+            key = settings.stdscr.getch()
+            handle_visual_mode(key)
+            handle_basic_navigation(key)
+            handle_resize(key)
+            if not settings.visual_mode:
+                handle_help_menu(key)
+                handle_inserting(key)
+                handle_commands(key)
+            handle_big_commands(key)
+            handle_grid_update(key)
 
 if __name__ == '__main__':
     curses.wrapper(main)

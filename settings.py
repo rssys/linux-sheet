@@ -1,6 +1,8 @@
 # global variables
 # window object representing the entire screen
 stdscr = None
+# the program should be able to take extra command arguments and just perform them then exit or print
+passed_commands = None
 # command manager to manage commands and undo/redo
 c_manager = None
 # the name of the file we are editing
@@ -14,8 +16,8 @@ index_dict = {}
 # the grid object that will hold all the contents
 grid = None
 # default grid total height and width
-grid_total_h = 1000
-grid_total_w = 1000
+grid_total_h = 3000
+grid_total_w = 3000
 # cap the grid dimensions
 grid_h_cap = 6240
 grid_w_cap = 6240

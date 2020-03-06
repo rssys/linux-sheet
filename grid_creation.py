@@ -11,7 +11,6 @@ from printing_to_screen import print_row_numbers
 
 def check_grid_resize(y_increase, x_increase):
     if settings.h_holder + settings.h + y_increase > settings.grid_total_h or (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w:
-        # if settings.grid_total_h * 2 < settings.grid_h_cap:
         pass
 def create_without_grid_lines():
     # need to erase to clear any strings that were previously painted that now shouldn't be there

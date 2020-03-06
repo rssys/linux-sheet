@@ -24,6 +24,9 @@ def read_data():
         reader = csv.reader(file, delimiter=',')
         # get as 2d list, but sum() flattens it into 1d list
         settings.contents = list(reader)
+        # if settings.contents is empty, add a single empty character to prevent bugs(in case user inserts rows or something)
+        if len(settings.contents) == 0:
+            settings.contents.insert(0,[])
     # If using my format then we need to index corrdinates, otherwise handle with regular csv with just commas
     if settings.format == "my_format":
         index_contents()

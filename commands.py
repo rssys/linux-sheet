@@ -156,7 +156,8 @@ class insert_rows:
                     row.append('')
                 settings.contents.insert(settings.current_row_idx, row)
             # pad_data_with_commas()
-            settings.grid.erase()
+            if not settings.passed_commands:
+                settings.grid.erase()
             # settings.grid.addstr(23,2,str(settings.contents))
     def undo(self):
         # store the user's current position

@@ -76,7 +76,7 @@ def big_commands(*args):
             # command = command_parts[0]
             # command_nums = command_parts[1]
             # handle each type of command
-            if command == key_mappings.GOTO:
+            if command == key_mappings.GOTO and not settings.passed_commands:
                 # coordinates = command_nums.split(',')
                 y, x = str_to_coordinates(command_nums)
                 go_to(y, x)
@@ -99,7 +99,6 @@ def big_commands(*args):
     # settings.stdscr.addstr(h-1,0,str(row) + str(col))
 
 def handle_basic_navigation(key):
-    check_grid_resize(1,1)
     if key == key_mappings.UP and settings.current_row_idx > 0:
         settings.current_row_idx -= 1
         if settings.current_row_idx < settings.h_holder:
@@ -108,6 +107,7 @@ def handle_basic_navigation(key):
         settings.current_row_idx += 1
         if settings.current_row_idx >= settings.h_holder + settings.grid_h:
             settings.h_holder += 1
+            check_grid_resize(1,0)
     elif key == key_mappings.LEFT and settings.current_col_idx > 0:
         settings.current_col_idx -= 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
@@ -116,6 +116,7 @@ def handle_basic_navigation(key):
         settings.current_col_idx += 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
             settings.w_holder += settings.cell_w
+            check_grid_resize(0,1)
 
 def handle_visual_mode(key):
     if key == ord(key_mappings.VISUAL_MODE):
@@ -216,7 +217,7 @@ def main(stdscr):
         for arg in sys.argv[1:]:
             big_commands(arg)
         # save the data
-        save_data()
+        save_data(sys.argv[-1])
     # Otherwise, open the program normally with the specified file
     else:
         # set bool to true so when calling big commands, it parses user inputted command when program is running

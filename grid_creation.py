@@ -10,8 +10,30 @@ from printing_to_screen import print_col_letters
 from printing_to_screen import print_row_numbers
 
 def check_grid_resize(y_increase, x_increase):
-    if settings.h_holder + settings.h + y_increase > settings.grid_total_h or (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w:
-        pass
+    # make booleans for whether or not the grid needs to be resized
+    resize = settings.h_holder + settings.h + y_increase > settings.grid_total_h or (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w
+    resize_h = settings.h_holder + settings.h + y_increase > settings.grid_total_h
+    resize_w = (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w
+
+    if resize:
+        while resize:
+            if resize_h:
+                settings.grid_total_h += settings.grid_h_interval
+            if resize_w:
+                settings.grid_total_w += settings.grid_w_interval
+
+            # reset the boolean variables to account for the added total grid height or width
+            resize = settings.h_holder + settings.h + y_increase > settings.grid_total_h or (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w
+            resize_h = settings.h_holder + settings.h + y_increase > settings.grid_total_h
+            resize_w = (settings.w_holder * settings.cell_w) + settings.w + x_increase > settings.grid_total_w
+        # check that the dimensions aren't over the max dimensions
+        if settings.grid_total_h > settings.grid_h_cap:
+            settings.grid_total_h = settings.grid_h_cap
+        if settings.grid_total_w > settings.grid_w_cap:
+            settings.grid_total_w = settings.grid_w_cap
+        # resize the grid
+        settings.grid.resize(settings.grid_total_h, settings.grid_total_w)
+
 def create_without_grid_lines():
     # need to erase to clear any strings that were previously painted that now shouldn't be there
     settings.stdscr.erase()

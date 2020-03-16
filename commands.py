@@ -190,7 +190,8 @@ class insert_cols:
             for a in range(0, num_cols):
                 for row in settings.contents:
                     row.insert(settings.current_col_idx, '')
-            settings.grid.erase()
+            if not settings.passed_commands:
+                settings.grid.erase()
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -225,7 +226,8 @@ class delete_rows:
                 self.rows_data.append(settings.contents[settings.current_row_idx])
                 # delete the row
                 del(settings.contents[settings.current_row_idx])
-            settings.grid.erase()
+            if not settings.passed_commands:
+                settings.grid.erase()
 
     def rewrite_rows(self):
         for row_index in range(0, len(self.rows_data)):
@@ -265,7 +267,8 @@ class delete_cols:
                 self.cols_data.append([])
                 for row in settings.contents:
                     self.cols_data[a].append(row.pop(settings.current_col_idx))
-            settings.grid.erase()
+            if not settings.passed_commands:
+                settings.grid.erase()
 
     def rewrite_cols(self):
         for col_index, col in enumerate(self.cols_data):

@@ -14,10 +14,17 @@ def index_contents():
         # break
         settings.index_dict[y + x] = index
 
-def save_data():
-    with open(settings.file_name, 'w') as csvFile:
-        writer = csv.writer(csvFile)
-        writer.writerows(settings.contents)
+def save_data(*args):
+    # if no args passed, save data normally with settings.file_name
+    if len(args) == 0:
+        with open(settings.file_name, 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(settings.contents)
+    # if there is an argument, then it is an output_file to put actual testcase data
+    else:
+        with open(args[0], 'w') as csvFile:
+            writer = csv.writer(csvFile)
+            writer.writerows(settings.contents)
 
 def read_data():
     with open(settings.file_name, 'r') as file:

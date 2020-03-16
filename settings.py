@@ -16,14 +16,14 @@ index_dict = {}
 # the grid object that will hold all the contents
 grid = None
 # default grid total height and width
-grid_total_h = 3000
-grid_total_w = 3000
+grid_total_h = 30
+grid_total_w = 30
 # interval to increase height and width
 grid_h_interval = 1000
 grid_w_interval = 1000
 # cap the grid dimensions
-grid_h_cap = 6240
-grid_w_cap = 6240
+grid_h_cap = 40
+grid_w_cap = 40
 # height and width of the screen
 h = 0
 w = 0

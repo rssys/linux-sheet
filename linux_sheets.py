@@ -104,19 +104,29 @@ def handle_basic_navigation(key):
         if settings.current_row_idx < settings.h_holder:
             settings.h_holder -= 1
     elif key == key_mappings.DOWN:
-        settings.current_row_idx += 1
-        if settings.current_row_idx >= settings.h_holder + settings.grid_h:
-            settings.h_holder += 1
-            check_grid_resize(1,0)
+        # need to check that we are not at the height boundary
+        if settings.current_row_idx + 1 != settings.grid_h_cap:
+            settings.current_row_idx += 1
+            if settings.current_row_idx >= settings.h_holder + settings.grid_h:
+                settings.h_holder += 1
+                check_grid_resize(1,0)
+            elif settings.current_row_idx >= settings.grid_total_h:
+                check_grid_resize(1,0)
+            # settings.stdscr.addstr(1, 0, str(settings.grid_total_h))
     elif key == key_mappings.LEFT and settings.current_col_idx > 0:
         settings.current_col_idx -= 1
         if settings.current_col_idx * settings.cell_w + settings.dist_from_wall <= settings.w_holder:
             settings.w_holder -= settings.cell_w
     elif key == key_mappings.RIGHT:
-        settings.current_col_idx += 1
-        if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
-            settings.w_holder += settings.cell_w
-            check_grid_resize(0,1)
+        # need to check that we are not at the width boundary
+        if (settings.current_col_idx + 1) * settings.cell_w <= settings.grid_w_cap:
+            settings.current_col_idx += 1
+            if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
+                settings.w_holder += settings.cell_w
+                check_grid_resize(0,1)
+            elif settings.current_col_idx * settings.cell_w >= settings.grid_total_w:
+                check_grid_resize(0,1)
+            # settings.stdscr.addstr(1, 0, str(settings.grid_total_w))
 
 def handle_visual_mode(key):
     if key == ord(key_mappings.VISUAL_MODE):

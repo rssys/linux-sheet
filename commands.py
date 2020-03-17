@@ -5,6 +5,7 @@ import settings
 from abc import ABC, abstractmethod
 
 from dimensions import get_dimensions
+from grid_creation import check_grid_resize
 from data_management import pad_data_with_commas
 from data_management import extend_rows
 from data_management import extend_cols
@@ -417,17 +418,44 @@ def quick_scroll(direction):
             settings.current_col_idx = settings.w_holder // settings.cell_w
     elif direction == 's':
         if settings.current_row_idx == settings.h_holder + h - 1:
-            # scroll down by screen height
-            settings.current_row_idx = settings.current_row_idx + h
-            settings.h_holder = settings.h_holder + h
+            # check if we are at the boundary
+            if settings.current_row_idx != settings.grid_h_cap:
+                if settings.current_row_idx + h > settings.grid_h_cap:
+                    check_grid_resize(1,0)
+                    settings.current_row_idx = settings.grid_h_cap - 1
+                    settings.h_holder = settings.current_row_idx - h + 1
+                else:
+                    # scroll down by screen height
+                    settings.current_row_idx = settings.current_row_idx + h
+                    settings.h_holder = settings.h_holder + h
         else:
-            # scroll to the bottom of screen
-            settings.current_row_idx = settings.h_holder + h - 1
+            # check if quick scroll will reach the height boundary
+            if settings.h_holder + h - 1 > settings.grid_total_h:
+                check_grid_resize(1,0)
+                settings.current_row_idx = settings.grid_total_h - 1
+            else:
+                # scroll to the bottom of screen
+                settings.current_row_idx = settings.h_holder + h - 1
     else: # the character is 'd'
-        if settings.current_col_idx == (settings.w_holder + w // settings.cell_w * settings.cell_w - settings.cell_w) // settings.cell_w: # we subtract settings.cell_w because we want to scroll one cell less than the full width of the screen otherwise we will go out of bounds
-            # scroll right by screen width
-            settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
-            settings.w_holder = settings.w_holder + w // settings.cell_w * settings.cell_w # divide and multiply to truncate so that w is a multiple of cell_w
+        rounded_w = w // settings.cell_w * settings.cell_w # divide and multiply to truncate so that w is a multiple of cell_w
+        if settings.current_col_idx == (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w: # we subtract settings.cell_w because we want to scroll one cell less than the full width of the screen otherwise we will go out of bounds
+            # check if we are at the boundary
+            if settings.current_col_idx * settings.cell_w + w > settings.grid_w_cap:
+                check_grid_resize(0,1)
+                settings.current_col_idx = (settings.grid_w_cap - 1) // settings.cell_w
+                settings.w_holder = settings.current_col_idx * settings.cell_w - rounded_w + settings.cell_w
+                settings.stdscr.addstr(1,0,"col idx: " + str(settings.current_col_idx))
+            else:
+                # scroll right by screen width
+                settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
+                settings.w_holder = settings.w_holder + rounded_w
         else:
-            # scroll all the way to the right of the screen
-            settings.current_col_idx = (settings.w_holder + w // settings.cell_w * settings.cell_w - settings.cell_w) // settings.cell_w
+            # check if quick scroll will reach the width boundary
+            if settings.w_holder + rounded_w - settings.cell_w > settings.grid_total_w:
+                check_grid_resize(0,1)
+                settings.current_col_idx = (settings.grid_total_w) // settings.cell_w
+                # settings.current_col_idx = (settings.grid_total_w - settings.cell_w) // settings.cell_w
+            else:
+                # scroll all the way to the right of the screen
+                settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w
+                # settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w

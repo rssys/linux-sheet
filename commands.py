@@ -439,23 +439,25 @@ def quick_scroll(direction):
     else: # the character is 'd'
         rounded_w = w // settings.cell_w * settings.cell_w # divide and multiply to truncate so that w is a multiple of cell_w
         if settings.current_col_idx == (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w: # we subtract settings.cell_w because we want to scroll one cell less than the full width of the screen otherwise we will go out of bounds
+            settings.stdscr.addstr(1,0,"in IF")
             # check if we are at the boundary
             if settings.current_col_idx * settings.cell_w + w > settings.grid_w_cap:
                 check_grid_resize(0,1)
                 settings.current_col_idx = (settings.grid_w_cap - 1) // settings.cell_w
                 settings.w_holder = settings.current_col_idx * settings.cell_w - rounded_w + settings.cell_w
-                settings.stdscr.addstr(1,0,"col idx: " + str(settings.current_col_idx))
             else:
                 # scroll right by screen width
                 settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
                 settings.w_holder = settings.w_holder + rounded_w
         else:
+            settings.stdscr.addstr(1,0,"in else")
             # check if quick scroll will reach the width boundary
             if settings.w_holder + rounded_w - settings.cell_w > settings.grid_total_w:
                 check_grid_resize(0,1)
-                settings.current_col_idx = (settings.grid_total_w) // settings.cell_w
+                settings.current_col_idx = (settings.grid_total_w) // settings.cell_w - 1
                 # settings.current_col_idx = (settings.grid_total_w - settings.cell_w) // settings.cell_w
             else:
+                settings.stdscr.addstr(1,0,"in FUTHER else")
                 # scroll all the way to the right of the screen
                 settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w
                 # settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w

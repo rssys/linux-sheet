@@ -119,7 +119,7 @@ def handle_basic_navigation(key):
             settings.w_holder -= settings.cell_w
     elif key == key_mappings.RIGHT:
         # need to check that we are not at the width boundary
-        if (settings.current_col_idx + 1) * settings.cell_w <= settings.grid_w_cap:
+        if (settings.current_col_idx + 1) * settings.cell_w < settings.grid_w_cap:
             settings.current_col_idx += 1
             if settings.current_col_idx * settings.cell_w + settings.dist_from_wall >= settings.w_holder + settings.grid_w // settings.cell_w * settings.cell_w: # divide and multiply by cell_w to truncate and make grid_w a multiple of cell_w
                 settings.w_holder += settings.cell_w

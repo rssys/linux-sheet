@@ -468,7 +468,7 @@ def quick_scroll(direction):
                 settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
                 settings.w_holder = settings.w_holder + rounded_w
         else:
-            # settings.stdscr.addstr(1,0,"IN ELSE")
+            settings.stdscr.addstr(1,0,"IN ELSE")
             # check if quick scroll will reach the width boundary
             if settings.w_holder + rounded_w - settings.cell_w > settings.grid_total_w:
                 # settings.stdscr.addstr(1,0,"IN FURTHER")
@@ -479,3 +479,6 @@ def quick_scroll(direction):
                 # scroll all the way to the right of the screen
                 settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w
                 # settings.current_col_idx = (settings.w_holder + rounded_w - settings.cell_w) // settings.cell_w
+            # check that we aren't out of bounds
+            if settings.current_col_idx * settings.cell_w >= settings.grid_total_w:
+                settings.current_col_idx = settings.grid_total_w // settings.cell_w - 1

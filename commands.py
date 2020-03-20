@@ -163,19 +163,23 @@ class insert_rows:
         self.row = settings.current_row_idx
         self.col = settings.current_col_idx
         self.num_rows = num_rows
-        # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
-        if settings.current_row_idx < len(settings.contents):
-            row_len = len(settings.contents[0])
-            # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
-            for a in range(0, num_rows):
-                row = []
-                for comma in range(0, row_len):
-                    row.append('')
-                settings.contents.insert(settings.current_row_idx, row)
-            # pad_data_with_commas()
-            if not settings.passed_commands:
-                settings.grid.erase()
-            # settings.grid.addstr(23,2,str(settings.contents))
+        if len(settings.contents) + 1 >= settings.grid_total_h:
+            check_grid_resize(1,0)
+        # only insert if number of rows in contents is not as big as height cap
+        if len(settings.contents) != settings.grid_h_cap:
+            # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
+            if settings.current_row_idx < len(settings.contents):
+                row_len = len(settings.contents[0])
+                # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
+                for a in range(0, num_rows):
+                    row = []
+                    for comma in range(0, row_len):
+                        row.append('')
+                    settings.contents.insert(settings.current_row_idx, row)
+                # pad_data_with_commas()
+                if not settings.passed_commands:
+                    settings.grid.erase()
+                # settings.grid.addstr(23,2,str(settings.contents))
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -202,13 +206,18 @@ class insert_cols:
         self.row = settings.current_row_idx
         self.col = settings.current_col_idx
         self.num_cols = num_cols
-        # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
-        if settings.current_col_idx < len(settings.contents[0]):
-            for a in range(0, num_cols):
-                for row in settings.contents:
-                    row.insert(settings.current_col_idx, '')
-            if not settings.passed_commands:
-                settings.grid.erase()
+        if len(settings.contents[0]) + 1 >= settings.grid_total_w // settings.cell_w:
+            check_grid_resize(0,1)
+
+        # only insert if number of cols in contents is not as big as width cap
+        if len(settings.contents[0]) != settings.grid_w_cap // settings.cell_w:
+            # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
+            if settings.current_col_idx < len(settings.contents[0]):
+                for a in range(0, num_cols):
+                    for row in settings.contents:
+                        row.insert(settings.current_col_idx, '')
+                if not settings.passed_commands:
+                    settings.grid.erase()
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -271,7 +280,7 @@ class delete_cols:
         self.col = 0
         self.cols_data = []
     def __call__(self, num_cols):
-        settings.grid.addstr(20,1, "B4 EVERYTHING: "+str(settings.contents))
+        # settings.grid.addstr(20,1, "B4 EVERYTHING: "+str(settings.contents))
         # num_cols = int(command_nums)
         self.row = settings.current_row_idx
         self.col = settings.current_col_idx
@@ -445,13 +454,11 @@ def quick_scroll(direction):
                     settings.current_row_idx = settings.current_row_idx + h
                     settings.h_holder = settings.h_holder + h
         else:
-            settings.stdscr.addstr(1,0,"IN ELSE")
+            # settings.stdscr.addstr(1,0,"IN ELSE")
             # check if quick scroll will reach the height boundary
             if settings.h_holder + h - 1 >= settings.grid_total_h:
                 check_grid_resize(1,0)
                 settings.current_row_idx = settings.grid_total_h - 1
-                settings.stdscr.addstr(1,0,"cur_row_idx: "+str(settings.current_row_idx))
-                # settings.stdscr.addstr(1,0,"settings.h_holder + h - 1: "+str(settings.h_holder + h - 1))
             else:
                 # scroll to the bottom of screen
                 settings.current_row_idx = settings.h_holder + h - 1
@@ -468,7 +475,6 @@ def quick_scroll(direction):
                 settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
                 settings.w_holder = settings.w_holder + rounded_w
         else:
-            settings.stdscr.addstr(1,0,"IN ELSE")
             # check if quick scroll will reach the width boundary
             if settings.w_holder + rounded_w - settings.cell_w > settings.grid_total_w:
                 # settings.stdscr.addstr(1,0,"IN FURTHER")

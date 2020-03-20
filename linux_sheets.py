@@ -56,9 +56,13 @@ def big_commands(*args):
     elif command == key_mappings.QUIT:
         settings.user_exited = True
     elif command == key_mappings.INSERT_ROW:
-        settings.c_manager.do(insert_rows(), 1)
+        # only perform a row insert operation if number of rows in contents is less than height cap
+        if len(settings.contents) < settings.grid_h_cap:
+            settings.c_manager.do(insert_rows(), 1)
     elif command == key_mappings.INSERT_COL:
-        settings.c_manager.do(insert_cols(), 1)
+        # only perform a col insert operation if number of rows in contents is less than width cap
+        if len(settings.contents[0]) < settings.grid_w_cap // settings.cell_w:
+            settings.c_manager.do(insert_cols(), 1)
     elif command == key_mappings.DELETE_ROW:
         settings.c_manager.do(delete_rows(), 1)
     elif command == key_mappings.DELETE_COL:

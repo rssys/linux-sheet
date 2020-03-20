@@ -51,10 +51,9 @@ def print_data():
             for col in range(settings.w_holder//settings.cell_w, (settings.w_holder + settings.grid_w)//settings.cell_w):
                 col_position = col * settings.cell_w
                 if row < len(settings.contents) and col < len(settings.contents[0]):
-                    # if settings.w_holder + settings.grid_w - (col_position + settings.dist_from_wall) < settings.cell_w:
-                    #     settings.grid.addstr(row,col_position + settings.dist_from_wall, settings.contents[row][col][:(settings.w_holder + settings.grid_w - (col_position + settings.dist_from_wall)-1 )]) #subtract 1 because we can't write to the bottom right corner of the screen
-                    # else:
-                        settings.grid.addstr(row, col_position + settings.dist_from_wall, settings.contents[row][col][:settings.cell_w-1]) # the -1 is to give one space between each cell
+                    # check if element is within dimension boundaries
+                    # if row < settings.grid_total_h and col < settings.grid_total_w:
+                    settings.grid.addstr(row, col_position + settings.dist_from_wall, settings.contents[row][col][:settings.cell_w-1]) # the -1 is to give one space between each cell
 
 
 def get_col_string(num):

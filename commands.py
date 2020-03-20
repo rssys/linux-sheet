@@ -445,10 +445,13 @@ def quick_scroll(direction):
                     settings.current_row_idx = settings.current_row_idx + h
                     settings.h_holder = settings.h_holder + h
         else:
+            settings.stdscr.addstr(1,0,"IN ELSE")
             # check if quick scroll will reach the height boundary
-            if settings.h_holder + h - 1 > settings.grid_total_h:
+            if settings.h_holder + h - 1 >= settings.grid_total_h:
                 check_grid_resize(1,0)
                 settings.current_row_idx = settings.grid_total_h - 1
+                settings.stdscr.addstr(1,0,"cur_row_idx: "+str(settings.current_row_idx))
+                # settings.stdscr.addstr(1,0,"settings.h_holder + h - 1: "+str(settings.h_holder + h - 1))
             else:
                 # scroll to the bottom of screen
                 settings.current_row_idx = settings.h_holder + h - 1
@@ -465,10 +468,12 @@ def quick_scroll(direction):
                 settings.current_col_idx = settings.current_col_idx + w // settings.cell_w
                 settings.w_holder = settings.w_holder + rounded_w
         else:
+            # settings.stdscr.addstr(1,0,"IN ELSE")
             # check if quick scroll will reach the width boundary
             if settings.w_holder + rounded_w - settings.cell_w > settings.grid_total_w:
+                # settings.stdscr.addstr(1,0,"IN FURTHER")
                 check_grid_resize(0,1)
-                settings.current_col_idx = (settings.grid_total_w) // settings.cell_w - 1
+                settings.current_col_idx = (settings.grid_total_w) // settings.cell_w
                 # settings.current_col_idx = (settings.grid_total_w - settings.cell_w) // settings.cell_w
             else:
                 # scroll all the way to the right of the screen

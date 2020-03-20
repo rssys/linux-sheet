@@ -165,20 +165,18 @@ class insert_rows:
         self.num_rows = num_rows
         if len(settings.contents) + 1 >= settings.grid_total_h:
             check_grid_resize(1,0)
-            
-        # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
-        if settings.current_row_idx < len(settings.contents):
-            row_len = len(settings.contents[0])
-            # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
-            for a in range(0, num_rows):
-                row = []
-                for comma in range(0, row_len):
-                    row.append('')
-                settings.contents.insert(settings.current_row_idx, row)
-            # pad_data_with_commas()
-            if not settings.passed_commands:
-                settings.grid.erase()
-            # settings.grid.addstr(23,2,str(settings.contents))
+
+        row_len = len(settings.contents[0])
+        # settings.grid.addstr(21,2,"B4: "+str(settings.contents))
+        for a in range(0, num_rows):
+            row = []
+            for comma in range(0, row_len):
+                row.append('')
+            settings.contents.insert(settings.current_row_idx, row)
+        # pad_data_with_commas()
+        if not settings.passed_commands:
+            settings.grid.erase()
+        # settings.grid.addstr(23,2,str(settings.contents))
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx
@@ -208,13 +206,11 @@ class insert_cols:
         if len(settings.contents[0]) + 1 >= settings.grid_total_w // settings.cell_w:
             check_grid_resize(0,1)
 
-        # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
-        if settings.current_col_idx < len(settings.contents[0]):
-            for a in range(0, num_cols):
-                for row in settings.contents:
-                    row.insert(settings.current_col_idx, '')
-            if not settings.passed_commands:
-                settings.grid.erase()
+        for a in range(0, num_cols):
+            for row in settings.contents:
+                row.insert(settings.current_col_idx, '')
+        if not settings.passed_commands:
+            settings.grid.erase()
     def undo(self):
         # store the user's current position
         user_rows = settings.current_row_idx

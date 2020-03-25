@@ -41,69 +41,101 @@ def str_to_coordinates(str_coordinates):
     x = int(coordinates[1])
     return y, x
 
-def big_commands(*args):
-    if settings.passed_commands:
-        command = args[0]
-    else:
-        curses.echo()
-        settings.stdscr.addstr(settings.h-1,0,":")
-        command = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
-        curses.noecho()
+def write_to_bottom(first_ch):
+    curses.echo()
+    settings.stdscr.addstr(settings.h-1,0, first_ch)
+    output = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
+    curses.noecho()
+    return output
 
-    if command == key_mappings.SAVE_AND_QUIT:
-        settings.user_exited = True
-        save_data()
-    elif command == key_mappings.QUIT:
-        settings.user_exited = True
-    elif command == key_mappings.INSERT_ROW:
+def big_commands(arg):
+
+    if settings.passed_commands:
+        command = arg
+    else:
+        # check if user typed ':'
+        if arg == ord(':'):
+            command = write_to_bottom(':')
+            # handle all big commands with ':'
+            if command == key_mappings.SAVE_AND_QUIT:
+                settings.user_exited = True
+                save_data()
+            elif command == key_mappings.QUIT:
+                settings.user_exited = True
+            elif ',' in command:
+                y, x = str_to_coordinates(command)
+                go_to(y, x)
+            settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
+            return
+        # set command to a combination of settings.prev_key and current key
+        if settings.prev_key is None:
+            settings.prev_key = chr(arg)
+            return
+        else:
+            command = settings.prev_key + chr(arg)
+            # assume one of the commands match and therefore we reset previous key to nothing
+            settings.prev_key = None
+
+    # handle other big commands
+    if command == key_mappings.INSERT_ROW:
         # only perform a row insert operation if number of rows in contents is less than height cap
         if len(settings.contents) < settings.grid_h_cap:
             # only insert a row in CSV file if it is within the data we have, so if CSV file has 10 lines and user inserts row at line 200, it won't do anything
             if settings.current_row_idx < len(settings.contents):
                 settings.c_manager.do(insert_rows(), 1)
+
     elif command == key_mappings.INSERT_COL:
         # only perform a col insert operation if number of rows in contents is less than width cap
         if len(settings.contents[0]) < settings.grid_w_cap // settings.cell_w:
             # only insert a col in CSV file if it is within the data we have, so if CSV file has 10 cols and user inserts col at col 200, it won't do anything
             if settings.current_col_idx < len(settings.contents[0]):
                 settings.c_manager.do(insert_cols(), 1)
+
     elif command == key_mappings.DELETE_ROW:
         settings.c_manager.do(delete_rows(), 1)
+
     elif command == key_mappings.DELETE_COL:
         settings.c_manager.do(delete_cols(), 1)
+
+    # if we reach this else it means none of the commands happened
     else:
-        # handle commands in the form command:line number/coordinates.
-        # Examples:
-        # :goto:20 means go to row 20
-        # :goto:20,13 means go to row 20, column 13
-        # :ir:10 means insert 10 rows at current location
-        try:
-            command, command_nums = separate_command(command)
-            # # separate the 2 parts of the command
-            # command_parts = command.split(':')
-            # command = command_parts[0]
-            # command_nums = command_parts[1]
-            # handle each type of command
-            if command == key_mappings.GOTO and not settings.passed_commands:
-                # coordinates = command_nums.split(',')
-                y, x = str_to_coordinates(command_nums)
-                go_to(y, x)
-            elif command == key_mappings.INSERT_ROW:
-                num_rows = int(command_nums)
-                settings.c_manager.do(insert_rows(), num_rows)
-            elif command == key_mappings.INSERT_COL:
-                num_cols = int(command_nums)
-                settings.c_manager.do(insert_cols(), num_cols)
-                # insert_cols(command_nums)
-            elif command == key_mappings.DELETE_ROW:
-                num_rows = int(command_nums)
-                settings.c_manager.do(delete_rows(), num_rows)
-            elif command == key_mappings.DELETE_COL:
-                num_cols = int(command_nums)
-                settings.c_manager.do(delete_cols(), num_cols)
-        except IndexError:
-            print(command)
-    settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
+        # set the previous key to current key
+        settings.prev_key = chr(arg)
+
+    # else:
+    #     # handle commands in the form command:line number/coordinates.
+    #     # Examples:
+    #     # :goto:20 means go to row 20
+    #     # :goto:20,13 means go to row 20, column 13
+    #     # :ir:10 means insert 10 rows at current location
+    #     try:
+    #         command, command_nums = separate_command(command)
+    #         # # separate the 2 parts of the command
+    #         # command_parts = command.split(':')
+    #         # command = command_parts[0]
+    #         # command_nums = command_parts[1]
+    #         # handle each type of command
+    #         if command == key_mappings.GOTO and not settings.passed_commands:
+    #             # coordinates = command_nums.split(',')
+    #             y, x = str_to_coordinates(command_nums)
+    #             go_to(y, x)
+    #         elif command == key_mappings.INSERT_ROW:
+    #             num_rows = int(command_nums)
+    #             settings.c_manager.do(insert_rows(), num_rows)
+    #         elif command == key_mappings.INSERT_COL:
+    #             num_cols = int(command_nums)
+    #             settings.c_manager.do(insert_cols(), num_cols)
+    #             # insert_cols(command_nums)
+    #         elif command == key_mappings.DELETE_ROW:
+    #             num_rows = int(command_nums)
+    #             settings.c_manager.do(delete_rows(), num_rows)
+    #         elif command == key_mappings.DELETE_COL:
+    #             num_cols = int(command_nums)
+    #             settings.c_manager.do(delete_cols(), num_cols)
+    #     except IndexError:
+    #         print(command)
+
+    # settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
     # settings.stdscr.addstr(h-1,0,str(row) + str(col))
 
 def handle_basic_navigation(key):
@@ -168,17 +200,15 @@ def handle_commands(key):
     elif key == ord(key_mappings.DELETE_CELL):
         settings.c_manager.do(delete_cell())
     elif key == ord(key_mappings.SEARCH):
-        curses.echo()
-        settings.stdscr.addstr(settings.h-1,0,"")
-        search_term = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
-        curses.noecho()
+        search_term = write_to_bottom('/')
+        settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
         search(search_term)
     elif key == ord(key_mappings.UNDO):
         settings.c_manager.undo()
-
+    elif key == ord(key_mappings.REDO):
+        settings.c_manager.redo()
 def handle_big_commands(key):
-        if key == ord(':'):
-            big_commands()
+    big_commands(key)
 
 def handle_resize(key):
     # move the user cursor to the top left corner so if the window gets small, the cursor won't go offscreen

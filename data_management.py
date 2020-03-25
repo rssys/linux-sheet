@@ -45,12 +45,16 @@ def get_csv_string_format(user_input):
     return str(settings.current_row_idx) + "|" + str(settings.current_col_idx) + "|" + user_input
 
 def extend_rows(content_rows, required_rows):
-    for a in range(content_rows, required_rows):
+    while required_rows > 0 and len(settings.contents) < settings.grid_total_h:
         settings.contents.append([])
+        required_rows -= 1
 
 def extend_cols(content_cols, required_cols):
-    for a in range(content_cols, required_cols):
+    # for a in range(content_cols, required_cols):
+    #     settings.contents[0].append('')
+    while required_cols > 0 and len(settings.contents[0]) < settings.grid_total_w // settings.cell_w:
         settings.contents[0].append('')
+        required_cols -= 1
 
 # everytime we write to a cell using regular CSV format we have to check if we need to pad commas so each row is the same length
 def pad_data_with_commas():

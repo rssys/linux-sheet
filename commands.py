@@ -67,7 +67,7 @@ class command_manager:
         for _ in range(n):
             if len(self.redo_commands) != 0:
                 command = self.pop_redo_command()
-                command()
+                command.redo()
                 self.push_undo_command(command)
             else:
                 # TODO print to the screen that there are no more commands to redo
@@ -77,6 +77,7 @@ class write_to_cell:
     def __init__(self):
         self.row = 0
         self.col = 0
+        self.data = None
     def __call__(self):
         self.row = settings.current_row_idx
         self.col = settings.current_col_idx
@@ -101,7 +102,7 @@ class write_to_cell:
                 settings.contents.append([])
             while len(settings.contents[settings.current_row_idx]) <= settings.current_col_idx:
                 settings.contents[settings.current_row_idx].append('')
-            settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input.decode('utf-8')
+            self.data = settings.contents[settings.current_row_idx][settings.current_col_idx] = user_input.decode('utf-8')
             pad_data_with_commas()
         settings.stdscr.clrtoeol()
         settings.grid.move((settings.current_row_idx), settings.dist_from_wall + (settings.current_col_idx * settings.cell_w))
@@ -111,6 +112,10 @@ class write_to_cell:
         settings.contents[self.row][self.col] = ''
         settings.grid.move((self.row), settings.dist_from_wall + (self.col * settings.cell_w))
         settings.grid.clrtoeol()
+
+    def redo(self):
+        # insert the data that was saved to this instance
+        settings.contents[self.row][self.col] = self.data
 
 class delete_cell:
     def __init__(self):
@@ -127,8 +132,15 @@ class delete_cell:
             settings.grid.clrtoeol();
 
     def undo(self):
-        if self.row < len(settings.contents) and self.col < len(settings.contents[0]):
-            settings.contents[self.row][self.col] = self.element
+        # if self.row < len(settings.contents) and self.col < len(settings.contents[0]):
+        settings.contents[self.row][self.col] = self.element
+
+    def redo(self):
+        # delete the cell again
+        self.element = settings.contents[self.row][self.col]
+        settings.contents[self.row][self.col] = ''
+        settings.grid.move(self.row, 0);
+        settings.grid.clrtoeol();
 
 def go_to(y, x):
     if y >= 0 and x >= 0:
@@ -193,6 +205,15 @@ class insert_rows:
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
 
+    def redo(self):
+        row = []
+        row_len = len(settings.contents[0])
+        for comma in range(0, row_len):
+            row.append('')
+        settings.contents.insert(self.row, row)
+        if not settings.passed_commands:
+            settings.grid.erase()
+
 
 class insert_cols:
     def __init__(self):
@@ -226,6 +247,12 @@ class insert_cols:
         # move the user back to original position
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
+
+    def redo(self):
+        for row in settings.contents:
+            row.insert(self.col, '')
+        if not settings.passed_commands:
+            settings.grid.erase()
 
 class delete_rows:
     def __init__(self):
@@ -266,6 +293,11 @@ class delete_rows:
         # move the user back to original position
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
+
+    def redo(self):
+        del(settings.contents[self.row])
+        if not settings.passed_commands:
+            settings.grid.erase()
 
 class delete_cols:
     def __init__(self):
@@ -309,6 +341,12 @@ class delete_cols:
         settings.current_row_idx = user_rows
         settings.current_col_idx = user_cols
 
+    def redo(self):
+        for row in settings.contents:
+            row.pop(self.col)
+        if not settings.passed_commands:
+            settings.grid.erase()
+
 
 def get_highlight_coordinates():
     # get smaller x and y values
@@ -341,10 +379,21 @@ def copy():
     # set up the 2d list
     for a in range(0,rows):
         settings.highlight_data.append([])
+    rows_to_insert = start_y + rows - len(settings.contents)
+    cols_to_insert = start_x + cols - len(settings.contents[0])
+    # pad rows and cols in the settings.contents array based on highlighted data
+    while rows_to_insert > 0:
+        settings.contents.append([])
+        rows_to_insert -= 1
+    while cols_to_insert > 0:
+        settings.contents[0].append('')
+        cols_to_insert -= 1
+    pad_data_with_commas()
+
     for y in range(0, rows):
         for x in range(0,cols):
-            if start_y+y < len(settings.contents) and start_x+x < len(settings.contents[0]):
-                settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
+            # if start_y+y < len(settings.contents) and start_x+x < len(settings.contents[0]):
+            settings.highlight_data[y].append(settings.contents[start_y+y][start_x+x])
     # settings.grid.move(21,0)
     # settings.grid.clrtoeol()
     # settings.grid.addstr(21,20,str(settings.highlight_data))
@@ -364,7 +413,8 @@ class paste:
             for col in range(0,len(settings.highlight_data[0])):
                 scaled_row = row + self.row
                 scaled_col = col + self.col
-                self.original_data[row][col] = settings.contents[scaled_row][scaled_col]
+                if scaled_row < len(settings.contents) and scaled_col < len(settings.contents[0]):
+                    self.original_data[row][col] = settings.contents[scaled_row][scaled_col]
 
     def __call__(self):
         content_rows = len(settings.contents)
@@ -388,7 +438,10 @@ class paste:
         # insert the data
         for y, row in enumerate(settings.highlight_data):
             for x, element in enumerate(row):
-                settings.contents[settings.current_row_idx + y][settings.current_col_idx + x] = element
+                row_coord = settings.current_row_idx + y
+                col_coord = settings.current_col_idx + x
+                if row_coord < settings.grid_total_h and col_coord < settings.grid_total_w // settings.cell_w:
+                    settings.contents[row_coord][col_coord] = element
 
     def undo(self):
         for row in range(0,len(self.original_data)):
@@ -396,8 +449,14 @@ class paste:
                 # only erase data that was pasted
                 scaled_row = row + self.row
                 scaled_col = col + self.col
-                settings.contents[scaled_row][scaled_col] = self.original_data[row][col]
+                if scaled_row < len(settings.contents) and scaled_col < len(settings.contents[0]):
+                    settings.contents[scaled_row][scaled_col] = self.original_data[row][col]
         settings.grid.erase()
+
+    def redo(self):
+        for y, row in enumerate(settings.highlight_data):
+            for x, element in enumerate(row):
+                settings.contents[self.row + y][self.col + x] = element
 
 def search(search_term):
     for y, row in enumerate(settings.contents):

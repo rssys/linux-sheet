@@ -35,5 +35,6 @@ def pop_up_help():
             navigating = True
         if navigating == True:
             navigate_help_menu()
-        elif key == 27: #escape key
+        elif key == ord('b'): #escape key
+            settings.stdscr.clear()
             break

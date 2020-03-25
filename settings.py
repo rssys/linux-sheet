@@ -19,11 +19,11 @@ grid = None
 grid_total_h = 10
 grid_total_w = 12
 # interval to increase height and width
-grid_h_interval = 1000
-grid_w_interval = 1000
+grid_h_interval = 500
+grid_w_interval = 500
 # cap the grid dimensions
-grid_h_cap = 10000
-grid_w_cap = 5000
+grid_h_cap = 15
+grid_w_cap = 36
 # height and width of the screen
 h = 0
 w = 0
@@ -72,3 +72,6 @@ highlight_prev_x = 0
 highlight_prev_y = 0
 # this 2d list is for storing the data that the user highlights
 highlight_data = []
+
+# previous key so we can register two key inputs like ir for insert row
+prev_key = None

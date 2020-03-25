@@ -456,7 +456,10 @@ class paste:
     def redo(self):
         for y, row in enumerate(settings.highlight_data):
             for x, element in enumerate(row):
-                settings.contents[self.row + y][self.col + x] = element
+                scaled_row = self.row + y
+                scaled_col = self.col + x
+                if scaled_row < len(settings.contents) and scaled_col < len(settings.contents[0]):
+                    settings.contents[scaled_row][scaled_col] = element
 
 def search(search_term):
     for y, row in enumerate(settings.contents):

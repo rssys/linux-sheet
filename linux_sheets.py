@@ -102,42 +102,6 @@ def big_commands(arg):
         # set the previous key to current key
         settings.prev_key = chr(arg)
 
-    # else:
-    #     # handle commands in the form command:line number/coordinates.
-    #     # Examples:
-    #     # :goto:20 means go to row 20
-    #     # :goto:20,13 means go to row 20, column 13
-    #     # :ir:10 means insert 10 rows at current location
-    #     try:
-    #         command, command_nums = separate_command(command)
-    #         # # separate the 2 parts of the command
-    #         # command_parts = command.split(':')
-    #         # command = command_parts[0]
-    #         # command_nums = command_parts[1]
-    #         # handle each type of command
-    #         if command == key_mappings.GOTO and not settings.passed_commands:
-    #             # coordinates = command_nums.split(',')
-    #             y, x = str_to_coordinates(command_nums)
-    #             go_to(y, x)
-    #         elif command == key_mappings.INSERT_ROW:
-    #             num_rows = int(command_nums)
-    #             settings.c_manager.do(insert_rows(), num_rows)
-    #         elif command == key_mappings.INSERT_COL:
-    #             num_cols = int(command_nums)
-    #             settings.c_manager.do(insert_cols(), num_cols)
-    #             # insert_cols(command_nums)
-    #         elif command == key_mappings.DELETE_ROW:
-    #             num_rows = int(command_nums)
-    #             settings.c_manager.do(delete_rows(), num_rows)
-    #         elif command == key_mappings.DELETE_COL:
-    #             num_cols = int(command_nums)
-    #             settings.c_manager.do(delete_cols(), num_cols)
-    #     except IndexError:
-    #         print(command)
-
-    # settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
-    # settings.stdscr.addstr(h-1,0,str(row) + str(col))
-
 def handle_basic_navigation(key):
     if key == key_mappings.UP and settings.current_row_idx > 0:
         settings.current_row_idx -= 1
@@ -229,7 +193,8 @@ def handle_resize(key):
         # TODO when resizing, get out of visual mode, so we will need to unhighlight everything
         if settings.visual_mode:
             settings.visual_mode = False
-            create_without_grid_lines()
+            # erase the highlighted part
+            settings.grid.erase()
 
 def handle_grid_update(key):
     if settings.visual_mode:
@@ -254,7 +219,10 @@ def main(stdscr):
     # settings.format = "my_format"
     settings.format = "CSV"
     read_data()
-    # index_contents()
+
+    # check if file exceeds max boundaries
+    if settings.grid_h_cap < len(settings.contents) or settings.grid_w_cap < len(settings.contents[0] * settings.cell_w):
+        sys.exit("The file you tried to open was too large")
 
     # determine if we are opening the program or just executing commands and then closing
     # If there are more than 2 arguments, the user is sending in commands to be done on the file
@@ -276,8 +244,19 @@ def main(stdscr):
         # get dimensions
         settings.h, settings.w = settings.stdscr.getmaxyx()
         settings.grid_h, settings.grid_w = get_dimensions()
+
         # initial drawing of grid
         create_without_grid_lines()
+
+        # we might need to resize initial grid
+        if settings.grid_total_h < len(settings.contents):
+            check_grid_resize(len(settings.contents) - settings.grid_total_h, 0)
+        if settings.grid_total_w < len(settings.contents[0] * settings.cell_w):
+            check_grid_resize(0, len(settings.contents[0]) * settings.cell_w - settings.grid_total_w)
+
+        refresh_grid()
+
+        # main loop
         while settings.user_exited == False:
             # read in user input
             key = settings.stdscr.getch()

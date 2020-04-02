@@ -35,17 +35,9 @@ def check_grid_resize(y_increase, x_increase):
         settings.grid.resize(settings.grid_total_h, settings.grid_total_w)
 
 def create_without_grid_lines():
-    # need to erase to clear any strings that were previously painted that now shouldn't be there
-    settings.stdscr.erase()
-
     # create the grid
     settings.grid = curses.newpad(settings.grid_total_h,settings.grid_total_w)
-    # if settings.grid_h + settings.h_holder > settings.biggest_h or settings.grid_w + settings.w_holder > settings.biggest_w:
-    #     settings.grid = curses.newpad(settings.grid_h + settings.h_holder, settings.grid_w + settings.w_holder)
-    #     settings.biggest_h = settings.grid_h + settings.h_holder
-    #     settings.biggest_w = settings.grid_w + settings.w_holder
-    # settings.grid.addstr(20,settings.current_col_idx*settings.cell_w,str(settings.biggest_w))
-    refresh_grid()
+    # refresh_grid()
 
 def refresh_grid():
     print_current_location()

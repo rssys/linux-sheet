@@ -12,7 +12,6 @@ from grid_creation import create_without_grid_lines
 from grid_creation import create_with_grid_lines
 from grid_creation import refresh_grid
 from dimensions import get_dimensions
-from help_menu import navigate_help_menu
 from help_menu import pop_up_help
 from commands import command_manager
 from commands import write_to_cell

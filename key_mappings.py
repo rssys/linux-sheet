@@ -11,17 +11,17 @@ QUICK_DOWN = 's'
 QUICK_RIGHT = 'd'
 # features
 INSERT = 'i'
-COPY = 'y'
-PASTE = 'p'
 DELETE_CELL = 'k'
-SEARCH = '/'
 INSERT_ROW = "rr"
 DELETE_ROW = "er"
 INSERT_COL = "cc"
 DELETE_COL = "ec"
-GOTO = "goto"
+COPY = 'y'
+PASTE = 'p'
 UNDO = 'u'
 REDO = 'o'
+SEARCH = '/'
+GOTO = "goto"
 # visual mode
 VISUAL_MODE = 'v'
 # help menu

@@ -47,23 +47,31 @@ def write_to_bottom(first_ch):
     curses.noecho()
     return output
 
+def handle_colon_commands(command):
+    # handle all big commands with ':'
+    if command == key_mappings.SAVE_AND_QUIT:
+        settings.user_exited = True
+        save_data()
+    elif command == key_mappings.QUIT:
+        settings.user_exited = True
+    elif ',' in command:
+        y, x = str_to_coordinates(command)
+        go_to(y, x)
+
 def big_commands(arg):
 
     if settings.passed_commands:
         command = arg
+        if ':' in command:
+            # strip the colon
+            command = command[1:]
+            handle_colon_commands(command)
+            return
     else:
         # check if user typed ':'
         if arg == ord(':'):
             command = write_to_bottom(':')
-            # handle all big commands with ':'
-            if command == key_mappings.SAVE_AND_QUIT:
-                settings.user_exited = True
-                save_data()
-            elif command == key_mappings.QUIT:
-                settings.user_exited = True
-            elif ',' in command:
-                y, x = str_to_coordinates(command)
-                go_to(y, x)
+            handle_colon_commands(command)
             settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
             return
         # set command to a combination of settings.prev_key and current key
@@ -99,7 +107,8 @@ def big_commands(arg):
     # if we reach this else it means none of the commands happened
     else:
         # set the previous key to current key
-        settings.prev_key = chr(arg)
+        if not settings.passed_commands:
+            settings.prev_key = chr(arg)
 
 def handle_basic_navigation(key):
     if key == key_mappings.UP and settings.current_row_idx > 0:

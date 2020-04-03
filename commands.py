@@ -153,12 +153,13 @@ def go_to(y, x):
         # make scaled_x variable for comparing to total width and settings settings.w_holder
         scaled_x = x * settings.cell_w
 
-        # resize the grid if necessary
-        while y >= settings.grid_total_h:
-            # settings.stdscr.addstr(1,0,"grid_total_h: "+str(settings.grid_total_h))
-            check_grid_resize(y-settings.h_holder,0)
-        while scaled_x >= settings.grid_total_w:
-            check_grid_resize(0,scaled_x-settings.w_holder)
+        if not settings.passed_commands:
+            # resize the grid if necessary
+            while y >= settings.grid_total_h:
+                # settings.stdscr.addstr(1,0,"grid_total_h: "+str(settings.grid_total_h))
+                check_grid_resize(y-settings.h_holder,0)
+            while scaled_x >= settings.grid_total_w:
+                check_grid_resize(0,scaled_x-settings.w_holder)
 
         # move the user
         settings.current_row_idx = y
@@ -417,6 +418,8 @@ class paste:
                     self.original_data[row][col] = settings.contents[scaled_row][scaled_col]
 
     def __call__(self):
+        if not settings.highlight_data:
+            return
         content_rows = len(settings.contents)
         content_cols = len(settings.contents[0])
         required_rows = settings.current_row_idx + len(settings.highlight_data)

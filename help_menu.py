@@ -11,7 +11,7 @@ def pop_up_help():
     # manual = curses.newpad(h, w)
     manual = curses.newpad(h, w)
     manual.box()
-    manual.addstr(1,2,'{:30}'.format("This is the help menu") + "press 'b' to go back")
+    manual.addstr(1,2,'{:30}'.format("Linux-Sheets User Manual") + "press 'b' to go back")
     manual.addstr(3,2,"Navigation:")
     manual.addstr(4,2,'{:30}'.format("Basic Movement") + "arrow keys")
     manual.addstr(5,2,'{:30}'.format("Quick scroll(up)") + key_mappings.QUICK_UP)
@@ -47,10 +47,8 @@ def pop_up_help():
     while True:
         key = settings.stdscr.getch()
         if key == ord(':'):
-            curses.echo()
-            settings.stdscr.addstr(settings.h-1,0, ':')
-            command = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
-            curses.noecho()
+            from linux_sheets import write_to_bottom
+            command = write_to_bottom(':')
             if command == key_mappings.SAVE_AND_QUIT:
                 settings.user_exited = True
                 save_data()
@@ -61,4 +59,7 @@ def pop_up_help():
         elif key == ord('b'): #escape key
             settings.stdscr.clear()
             break
+        elif key == curses.KEY_RESIZE:
+            from linux_sheets import handle_resize
+            handle_resize(key)
         manual.refresh(0, 0, 0, 0, settings.h - 1, settings.w - 1)

@@ -1,10 +1,16 @@
-# Project Title
+# Clark Sheets
 
-Project Title is a shell based spreadsheet application.
+Clark Sheets is a shell based spreadsheet application.
 
-## Getting Started
+## Features
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+* Supports 32768 rows and 702 columns
+* Copy/Paste
+* Quick scroll
+* Go to any coordinates on the grid
+* Undo/Redo
+* Insert and Delete rows/columns
+* Search
 
 ### Prerequisites
 

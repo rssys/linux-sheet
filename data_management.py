@@ -27,13 +27,20 @@ def save_data(*args):
             writer.writerows(settings.contents)
 
 def read_data():
-    with open(settings.file_name, 'r') as file:
+    # with open(settings.file_name, 'r') as file:
+    try:
+        file = open(settings.file_name, 'r')
         reader = csv.reader(file, delimiter=',')
         # get as 2d list, but sum() flattens it into 1d list
         settings.contents = list(reader)
         # if settings.contents is empty, add a single empty character to prevent bugs(in case user inserts rows or something)
         if len(settings.contents) == 0:
             settings.contents.insert(0,[])
+    except FileNotFoundError:
+        # create a new file
+        file = open(settings.file_name, 'x')
+        settings.contents = [[]]
+
     # If using my format then we need to index corrdinates, otherwise handle with regular csv with just commas
     if settings.format == "my_format":
         index_contents()

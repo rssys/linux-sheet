@@ -245,11 +245,18 @@ def main(stdscr):
     if len(sys.argv) > 2:
         # set bool to true so when calling big commands, we can pass in commands and it will know to parse them
         settings.passed_commands = True
-        # start iterating at the second argument and go through all system arguments
-        for arg in sys.argv[1:]:
-            big_commands(arg)
-        # save the data
-        save_data(sys.argv[-1])
+        testing = sys.argv[2] is "testing"
+        
+        if testing:
+            # start iterating at the 4th argument and go through all system arguments
+            for arg in sys.argv[3:]:
+                big_commands(arg)
+                save_data(sys.argv[-1])
+        else:
+            # start iterating at the 3rd argument and go through all system arguments
+            for arg in sys.argv[2:]:
+                big_commands(arg)
+                save_data(sys.argv[1])
     # Otherwise, open the program normally with the specified file
     else:
         # set bool to true so when calling big commands, it parses user inputted command when program is running

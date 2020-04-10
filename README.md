@@ -28,10 +28,14 @@ install with pip
 pip install ClarkSheets
 ```
 
-And repeat
+### Using the Program
+
+There are 2 ways to use the program:
+
+1. You can run it with python3 on a CSV file and start using it, ex:
 
 ```
-until finished
+python3 Clark_Sheets.py some_file.csv
 ```
 
 End with an example of getting some data out of the system or using it for a little demo

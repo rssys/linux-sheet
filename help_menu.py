@@ -47,7 +47,7 @@ def pop_up_help():
     while True:
         key = settings.stdscr.getch()
         if key == ord(':'):
-            from linux_sheets import write_to_bottom
+            from Clark_Sheets import write_to_bottom
             command = write_to_bottom(':')
             if command == key_mappings.SAVE_AND_QUIT:
                 settings.user_exited = True
@@ -60,6 +60,6 @@ def pop_up_help():
             settings.stdscr.clear()
             break
         elif key == curses.KEY_RESIZE:
-            from linux_sheets import handle_resize
+            from Clark_Sheets import handle_resize
             handle_resize(key)
         manual.refresh(0, 0, 0, 0, settings.h - 1, settings.w - 1)

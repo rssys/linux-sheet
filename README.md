@@ -35,7 +35,7 @@ python3 Clark_Sheets.py some_file.csv
 ```
 python3 Clark_Sheets.py some_file.csv command1 command2
 ```
-[key_mappings.py](https://github.com/rssys/linux-sheet/blob/master/key_mappings.py) has all the key mappings for the commands, and since currently the program can only insert and delete rows and cols
+[key_mappings.py](https://github.com/rssys/linux-sheet/blob/master/key_mappings.py) has all the key mappings for the commands, you just have to send those in. Currently the program can only insert and delete rows and cols.
 
 ## Running the tests
 

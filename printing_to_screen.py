@@ -19,7 +19,7 @@ def print_current_location():
         if settings.current_row_idx < len(settings.contents) and settings.current_col_idx < len(settings.contents[0]) and settings.contents[settings.current_row_idx][settings.current_col_idx] is not '':
                 settings.stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx + 1) + ' col: ' + get_col_string(settings.current_col_idx + 1) + ' | ' + str(settings.contents[settings.current_row_idx][settings.current_col_idx]))
         else:
-            settings.stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx + 1) + ' col: ' + str(settings.current_col_idx + 1))
+            settings.stdscr.addstr(0, 0, 'row: ' + str(settings.current_row_idx + 1) + ' col: ' + get_col_string(settings.current_col_idx + 1))
 
 def print_data():
     # print data
@@ -65,9 +65,10 @@ def get_col_string(num):
 
 def print_col_letters():
     # settings.stdscr.attron(curses.color_pair(1))
-    for a in range(settings.grid_w//settings.cell_w): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
+    num_cols_to_print = settings.grid_w//settings.cell_w
+    for a in range(num_cols_to_print): #TODO this writes to parts that are partially shown but in the case where the string is the bottom right corner it messes up
     # for a in range(grid_w//cell_w + 1): this sometimes works but if you resize it a certain way it prints the last col unumber on the next row
-        a_str = get_col_string(settings.w_holder//settings.cell_w + a + 1) #we send in 0 on the first call but need to start at 1
+        a_str = get_col_string(num_cols_to_print + a + 1) #we send in 0 on the first call but need to start at 1
         settings.stdscr.addstr(2, settings.left_margin + (a*settings.cell_w), a_str.center(settings.cell_w))
         # settings.stdscr.addstr(2, left_margin + (cell_w//2)+(a*cell_w), a_str)
     # settings.stdscr.attroff(curses.color_pair(1))

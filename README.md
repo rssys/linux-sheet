@@ -38,7 +38,12 @@ There are 2 ways to use the program:
 python3 Clark_Sheets.py some_file.csv
 ```
 
-End with an example of getting some data out of the system or using it for a little demo
+2. You can also pass in a series of commands as extra arguments and the program will open the file passed in, execute the passed in commands, save the data, and exit
+
+```
+python3 Clark_Sheets.py some_file.csv command1 command2
+```
+[key_mappings.py](https://github.com/rssys/linux-sheet/blob/master/key_mappings.py) has all the key mappings for the commands, and since currently the program can only insert and delete rows and cols
 
 ## Running the tests
 
@@ -52,6 +57,8 @@ Go into test_cases and each subdirectory to run each test case(I will make a bas
 * when searching implement a next option to cycle through all matches
 * customizable key key_mappings
 * formulas
+* Better testing, as well as testing more features such as go_to, quick_scroll, things that don't impact the data but could cause crashes because they move off screen
+* when passing in extra commands, be able to write data
 
 ## Contributing
 

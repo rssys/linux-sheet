@@ -36,9 +36,16 @@ def separate_command(command):
 
 def str_to_coordinates(str_coordinates):
     coordinates = str_coordinates.split(',')
-    y = int(coordinates[0])
-    x = int(coordinates[1])
-    return y, x
+    try:
+        y = int(coordinates[0])
+        x = int(coordinates[1])
+        if x < 1:
+            x = 1
+        if y < 1:
+            y = 1
+        return y, x
+    except ValueError:
+        return -1, -1
 
 def write_to_bottom(first_ch):
     curses.echo()
@@ -57,7 +64,8 @@ def handle_colon_commands(command):
         settings.user_exited = True
     elif ',' in command:
         y, x = str_to_coordinates(command)
-        go_to(y, x)
+        if y != -1 and x != -1:
+            go_to(y, x)
 
 def big_commands(arg):
 

@@ -182,7 +182,8 @@ def go_to(y, x):
         # check if go_to went to the width boundary
         dist_from_rightmost = settings.grid_w_cap - scaled_x
         if dist_from_rightmost < settings.grid_w:
-            settings.w_holder = settings.grid_w_cap - settings.grid_w
+            rounded_w = settings.grid_w // settings.cell_w * settings.cell_w
+            settings.w_holder = settings.grid_w_cap - rounded_w
         else:
             settings.w_holder = scaled_x
 

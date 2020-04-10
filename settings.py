@@ -13,6 +13,9 @@ format = ""
 contents = []
 # this dictionary is for my own format where each input has coordinates attached to it
 index_dict = {}
+# cell width and height let us do formatted printing and navigate through each cell
+cell_h = 2
+cell_w = 15
 # the grid object that will hold all the contents
 grid = None
 # default grid total height and width
@@ -22,8 +25,8 @@ grid_total_w = 12
 grid_h_interval = 500
 grid_w_interval = 500
 # cap the grid dimensions
-grid_h_cap = 32505
-grid_w_cap = 12 * 232
+grid_h_cap = 32760
+grid_w_cap = cell_w * 232
 # height and width of the screen
 h = 0
 w = 0
@@ -41,9 +44,6 @@ current_row_idx = 0
 current_col_idx = 0
 # boolean to keep track of when to exit the program
 user_exited = False
-# cell width and height let us do formatted printing and navigate through each cell
-cell_h = 2
-cell_w = 12
 # gap at top, bottom, and left of screen for the row and column bars and for when user enters input
 top_margin = 3
 bottom_margin = 1

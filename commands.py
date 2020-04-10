@@ -143,7 +143,13 @@ class delete_cell:
         settings.grid.clrtoeol();
 
 def go_to(y, x):
-    if y >= 0 and x >= 0:
+    if y > 0 and x > 0:
+        # make off by 1 variable to keep track of off by 1 because the indices we use start from 0 but the user starts counting from 1
+        off_by_1 = 1
+        # account for the off by 1
+        y -= off_by_1
+        x -= off_by_1
+
         # if user  tries to go out of max dimensions, just go to the bottom
         if y >= settings.grid_h_cap:
             y = settings.grid_h_cap - 1

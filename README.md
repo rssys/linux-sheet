@@ -51,7 +51,7 @@ Go into test_cases and each subdirectory to run each test case(I will make a bas
 
 ## Contributing
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
+Will figure this one out after our meeting as I(Clark) am not the creator of this repo and am not aware of the permissions granted to contributors
 
 ## Authors
 

@@ -15,7 +15,7 @@ contents = []
 index_dict = {}
 # cell width and height let us do formatted printing and navigate through each cell
 cell_h = 2
-cell_w = 15
+cell_w = 20
 # the grid object that will hold all the contents
 grid = None
 # default grid total height and width
@@ -25,8 +25,8 @@ grid_total_w = 12
 grid_h_interval = 500
 grid_w_interval = 500
 # cap the grid dimensions
-grid_h_cap = 32760
-grid_w_cap = cell_w * 232
+grid_h_cap = 32768
+grid_w_cap = cell_w * 702
 # height and width of the screen
 h = 0
 w = 0

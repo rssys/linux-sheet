@@ -45,6 +45,7 @@ def write_to_bottom(first_ch):
     settings.stdscr.addstr(settings.h-1,0, first_ch)
     output = settings.stdscr.getstr(settings.h-1,1).decode('utf-8')
     curses.noecho()
+    settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
     return output
 
 def handle_colon_commands(command):
@@ -72,7 +73,6 @@ def big_commands(arg):
         if arg == ord(':'):
             command = write_to_bottom(':')
             handle_colon_commands(command)
-            settings.stdscr.clrtoeol() # this is so the command string doesn't stay on screen
             return
         # set command to a combination of settings.prev_key and current key
         if settings.prev_key is None:

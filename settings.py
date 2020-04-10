@@ -22,8 +22,8 @@ grid_total_w = 12
 grid_h_interval = 500
 grid_w_interval = 500
 # cap the grid dimensions
-grid_h_cap = 10000
-grid_w_cap = 3600
+grid_h_cap = 32505
+grid_w_cap = 12 * 1000
 # height and width of the screen
 h = 0
 w = 0

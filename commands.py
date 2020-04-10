@@ -163,9 +163,22 @@ def go_to(y, x):
 
         # move the user
         settings.current_row_idx = y
-        settings.h_holder = y
         settings.current_col_idx = x
-        settings.w_holder = scaled_x
+
+        # check if go_to went to the height boundary
+        dist_from_bottom = settings.grid_h_cap - y
+        if dist_from_bottom < settings.grid_h:
+            # settings.stdscr.addstr(1,0,str(settings.h)+" vs: "+str(settings.grid_h))
+            settings.h_holder = settings.grid_h_cap - settings.grid_h
+        else:
+            settings.h_holder = y
+
+        # check if go_to went to the width boundary
+        dist_from_rightmost = settings.grid_w_cap - scaled_x
+        if dist_from_rightmost < settings.grid_w:
+            settings.w_holder = settings.grid_w_cap - settings.grid_w
+        else:
+            settings.w_holder = scaled_x
 
 class insert_rows:
     def __init__(self):

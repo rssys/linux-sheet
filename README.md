@@ -1,6 +1,6 @@
 # Clark Sheets
 
-Clark Sheets is a shell based spreadsheet application.
+Clark Sheets is a shell based spreadsheet application made with python3 and the curses module.
 
 ## Features
 
@@ -18,6 +18,12 @@ install with pip
 
 ```
 pip install ClarkSheets
+```
+
+You probably have multiple versions of Python installed, so you may need to specify to pip to use python3
+
+```
+python3 -m pip install ClarkSheets
 ```
 
 ### Using the Program

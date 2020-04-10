@@ -12,6 +12,10 @@ Clark Sheets is a shell based spreadsheet application made with python3 and the 
 * Insert and Delete rows/columns
 * Search
 
+### Prerequisites
+
+python3
+
 ### Installing
 
 install with pip

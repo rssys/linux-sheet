@@ -51,7 +51,7 @@ python3 Clark_Sheets.py some_file.csv command1 command2
 
 Go into [test_cases](https://github.com/rssys/linux-sheet/tree/master/test_cases) and each subdirectory to run each test case(I will make a bash script to run all of them at once soon)
 
-## Things I'd like to add
+## Features to be added in the future
 
 * individual resizable columns
 * general resizable columns
@@ -64,7 +64,10 @@ Go into [test_cases](https://github.com/rssys/linux-sheet/tree/master/test_cases
 
 ## Contributing
 
-Will figure this one out after our meeting as I(Clark) am not the creator of this repo and am not aware of the permissions granted to contributors
+* fork
+* clone
+* make changes
+* create pull request
 
 ## Authors
 

@@ -66,6 +66,7 @@ Go into [test_cases](https://github.com/rssys/linux-sheet/tree/master/test_cases
 
 * fork
 * clone
+* make a new branch
 * make changes
 * create pull request
 
